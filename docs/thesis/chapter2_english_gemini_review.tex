@@ -1,0 +1,393 @@
+% This file was generated and reviewed by Gemini based on the content of chapter2_english.txt
+% It includes formatting for academic LaTeX style and incorporates architectural discussions.
+
+\documentclass[12pt,a4paper]{report}
+% Add necessary packages for the document, typically in the main .tex file.
+% For this standalone chapter, we'll include a minimal set.
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{float} % For [H] placement of figures/tables
+
+% Assuming similar geometry setup as chapter1_latex.tex
+\geometry{
+    left=3cm,
+    right=2cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+\onehalfspacing
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% For standalone chapter, remove \title, \author, \date, \maketitle, \tableofcontents
+% These would typically be in the main thesis file.
+% Start directly with the chapter.
+
+\begin{document}
+
+\chapter{Analysis of the Subject Domain and System Design Methodology}
+
+\section*{Chapter Introduction}
+
+The second chapter is devoted to the analysis of the subject domain specific to Astana's air quality monitoring ecosystem, the examination of available data sources, justification for the selection of methods and tools, and the development of the system architecture. The chapter is structured as follows: Section 2.1 analyzes the current state of air quality monitoring in Astana; Section 2.2 examines available data sources and their characteristics; Section 2.3 provides justification for the selection of methods and tools; Section 2.4 presents the system architecture design; Section 2.5 describes the data processing methodology.
+
+\textbf{Note on Scope:} Given the limited availability of multi-pollutant historical data for Astana (only $\text{PM}_{2.5}$ measurements are consistently available from the U.S. Embassy reference station), the system focuses on \textbf{forecasting} and \textbf{pattern analysis} rather than complex source apportionment, which would require tracer pollutants ($\text{SO}_2$, $\text{NO}_2$, $\text{H}_2\text{S}$) not available in open datasets.
+
+
+% ============================================================================
+\section{Analysis of Air Quality Monitoring in Astana}
+
+\subsection{Climatic and Geographic Context}
+
+Astana, the capital of the Republic of Kazakhstan, is located in the northern part of the country on the banks of the Ishim River. The city is characterized by a sharply continental climate with extreme temperature variations.
+
+\textbf{Geographic Coordinates:}
+\begin{itemize}
+    \item Latitude: $51.1694^{\circ}$ N
+    \item Longitude: $71.4491^{\circ}$ E
+    \item Elevation: approximately 347 meters above sea level
+\end{itemize}
+
+\textbf{Climate Characteristics:}
+\begin{itemize}
+    \item Winter temperatures: down to $-40^{\circ}$C (January average: $-14.2^{\circ}$C);
+    \item Summer temperatures: up to $+40^{\circ}$C (July average: $+20.8^{\circ}$C);
+    \item Annual precipitation: 300--350 mm;
+    \item Prevailing winds: north and northwest directions;
+    \item Frequent dust storms in spring and autumn periods.
+\end{itemize}
+
+These climatic conditions significantly impact air quality:
+\begin{enumerate}
+    \item Extreme cold in winter leads to increased heating loads and associated emissions from residential and power generation sectors;
+    \item Temperature inversions during winter months trap pollutants near the surface;
+    \item Dust storms from surrounding steppe regions contribute to elevated $\text{PM}_{10}$ concentrations;
+    \item Strong winds can both disperse and transport pollutants over long distances.
+\end{enumerate}
+
+\subsection{Primary Emission Sources in Astana}
+
+Understanding emission sources is critical for source apportionment modeling. The main pollution sources in Astana include:
+
+\begin{enumerate}
+    \item \textbf{Transportation Sector:} Over 500,000 registered vehicles; intensive traffic on major arterial roads; characteristic pollutants: $\text{NO}_2$, CO, $\text{PM}_{2.5}$ (from diesel), BC.
+    \item \textbf{Power Generation and Heating:} Central heating plants primarily using coal and natural gas; individual heating systems in private residential areas; seasonal pattern with maximum emissions in heating season (October--April).
+    \item \textbf{Construction Activities:} Extensive urban development projects; dust emissions from construction sites (characteristic pollutants: $\text{PM}_{10}$, TSP).
+    \item \textbf{Industrial Facilities:} Industrial zone in the northern part of the city; characteristic pollutants: specific VOCs, $\text{SO}_2$, particulates.
+    \item \textbf{Transboundary and Natural Sources:} Dust transport from arid regions; emissions from neighboring industrial areas; Sand and Dust Storms (SDS).
+\end{enumerate}
+
+\subsection{Current Monitoring Infrastructure}
+
+The air quality monitoring infrastructure in Astana consists of several components with different capabilities and coverage:
+
+\textbf{RGP Kazhydromet Network:} Kazhydromet operates the official state monitoring network in Astana, consisting of 5--7 automatic monitoring posts. It measures a wide range of parameters including $\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{SO}_2$, $\text{NO}_2$, CO, $\text{O}_3$, $\text{H}_2\text{S}$, and formaldehyde with hourly resolution. Data is published on the official website but lacks a public API.
+
+\textbf{U.S. Embassy Air Quality Monitor:} An independent reference-grade BAM-1022 monitor located at the U.S. Embassy compound. It provides hourly $\text{PM}_{2.5}$ measurements according to U.S. EPA protocols and is available via AirNow/AQICN platforms.
+
+\textbf{Commercial and Research Sensors:} Various low-cost sensor deployments exist, including the Sergek system sensors and individual PurpleAir units.
+
+\subsection{Identified Challenges and Gaps}
+
+Analysis of the current monitoring ecosystem reveals several critical challenges:
+
+\textbf{Data Accessibility Challenges:}
+\begin{itemize}
+    \item No standardized public API for Kazhydromet data;
+    \item Limited spatial coverage (5--7 stations for 1.3+ million population);
+    \item Data format heterogeneity across different sources.
+\end{itemize}
+
+\textbf{Data Quality Challenges:}
+\begin{itemize}
+    \item Measurement discrepancies between sources;
+    \item Data gaps due to equipment maintenance or power outages;
+    \item Limited tracer measurements needed for robust source apportionment.
+\end{itemize}
+
+
+% ============================================================================ 
+\section{Data Sources and Their Characteristics}
+
+\subsection{Primary Data Source: RGP Kazhydromet}
+
+RGP Kazhydromet serves as the primary authoritative data source. Table \ref{tab:kazhydromet_pollutants} lists the measured parameters.
+
+\begin{table}[H]
+\centering
+\caption{Pollutants Measured by Kazhydromet Network}
+\label{tab:kazhydromet_pollutants}
+\begin{tabular}{lll}
+\toprule
+\textbf{Category} & \textbf{Pollutant} & \textbf{Typical Units} \\
+\midrule
+Criteria & $\text{PM}_{2.5}$, $\text{PM}_{10}$ & $\mu$g/m$^3$ \\
+Pollutants & $\text{SO}_2$, $\text{NO}_2$, $\text{O}_3$ & $\mu$g/m$^3$ \\
+           & CO & mg/m$^3$ \\
+\midrule
+Tracer & $\text{H}_2\text{S}$, Phenol & $\mu$g/m$^3$ \\
+Components & $\text{NH}_3$, Formaldehyde & $\mu$g/m$^3$ \\
+\midrule
+Heavy Metals & Lead (Pb) & $\mu$g/m$^3$ \\
+             & Cadmium (Cd), Nickel (Ni) & ng/m$^3$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Since no public API is available, data acquisition requires manual download or web scraping. Historical data is available from 2015 onwards with hourly resolution.
+
+\subsection{Reference Benchmark: U.S. Embassy Monitor}
+
+The U.S. Embassy PM2.5 monitor (MetOne BAM-1022) provides high-quality reference data. It serves as ground truth for model validation and enables calibration of low-cost sensors. Data is accessible via the AirNow API and AQICN API.
+
+\subsection{Supplementary Data Sources}
+
+\textbf{External APIs for Gap-Filling:}
+\begin{itemize}
+    \item \textbf{OpenWeatherMap Air Pollution API:} Global coverage, gap-filling for missing periods.
+    \item \textbf{Google Air Quality API:} Visualization enrichment and health recommendations.
+    \item \textbf{AQICN (World Air Quality Index):} Real-time aggregated data for alerts.
+\end{itemize}
+
+\textbf{Meteorological Data Sources:}
+\begin{itemize}
+    \item \textbf{Kazhydromet Meteorological Stations:} T, RH, Pressure, Wind Speed/Direction.
+    \item \textbf{OpenWeatherMap Weather API:} Hourly conditions and forecasts.
+    \item \textbf{ERA5 Reanalysis Data (ECMWF):} Historical analysis for model training.
+\end{itemize}
+
+\subsection{Data Integration Strategy}
+
+The AAQIS system implements a priority hierarchy:
+\begin{enumerate}
+    \item Kazhydromet (primary regulatory data);
+    \item U.S. Embassy (reference benchmark);
+    \item Commercial APIs (gap-filling);
+    \item Meteorological services (feature enrichment).
+\end{enumerate}
+
+Integration solutions include normalizing all timestamps to UTC, converting units to SI ($\mu$g/m$^3$), and using ML imputation for missing values.
+
+
+% ============================================================================ 
+\section{Justification for Selection of Methods and Tools}
+
+\subsection{Programming Language Selection: Python}
+
+Python (version 3.10+) is selected as the primary development language due to its dominant position in data analysis and machine learning. Key libraries include \textbf{pandas} and \textbf{numpy} for data manipulation, \textbf{scikit-learn} and \textbf{TensorFlow/Keras} for machine learning, and \textbf{Django} for web development.
+
+\subsection{Machine Learning Model Selection}
+
+\textbf{For Forecasting (AAQIS-Forecast Module):}
+\begin{itemize}
+    \item \textbf{Long Short-Term Memory (LSTM):} Selected for its ability to capture long-term temporal dependencies and seasonal patterns in time series data.
+    \item \textbf{Support Vector Regression (SVR):} Selected as a robust alternative for medium-sized datasets, effective in modeling nonlinear relationships.
+\end{itemize}
+
+\textbf{For Pattern Analysis (AAQIS-Patterns Module):}
+\begin{itemize}
+    \item \textbf{Correlation Analysis:} Pearson and Spearman correlation coefficients to identify relationships between $\text{PM}_{2.5}$ concentrations and meteorological factors (temperature, humidity, wind speed).
+    \item \textbf{Seasonal Decomposition:} STL (Seasonal-Trend decomposition using LOESS) to separate trend, seasonal, and residual components in the time series.
+    \item \textbf{Anomaly Detection:} Statistical methods (Z-score, IQR) to identify pollution episodes and unusual patterns.
+\end{itemize}
+
+\subsection{Database Selection}
+
+\textbf{Design Principle: Simplicity Over Premature Optimization.}
+For the estimated data volume (approx. 50,000--70,000 records per year), a specialized distributed time-series database is not required.
+
+\textbf{Primary Database: PostgreSQL.}
+Selected as the single unified database for all data types (time series, metadata, user accounts). It is robust, supports spatial queries via PostGIS, and integrates natively with Django. Time-series performance is optimized through proper B-tree indexing and partitioning strategies.
+
+\subsection{Web Framework Selection: Django}
+
+Django is selected for its "batteries-included" approach, providing a built-in admin interface, ORM, and authentication out of the box. \textbf{Django REST Framework (DRF)} will be used to expose API endpoints.
+
+\subsection{Summary of Technology Stack}
+
+Table \ref{tab:tech_stack} summarizes the selected technologies, prioritizing implementability for a diploma project.
+
+\begin{table}[H]
+\centering
+\caption{AAQIS Technology Stack (Simplified)}
+\label{tab:tech_stack}
+\begin{tabular}{lll}
+\toprule
+\textbf{Component} & \textbf{Technology} & \textbf{Purpose} \\
+\midrule
+Language & Python 3.10+ & Core development \\
+Data Processing & pandas, numpy & ETL, Data manipulation \\
+ML & scikit-learn, Keras & SVR, LSTM models \\
+Database & PostgreSQL & Unified storage \\
+Web Framework & Django & Backend, Templates \\
+Frontend & Bootstrap, Plotly.js & UI, Visualizations \\
+Deployment & Docker Compose & Local containerization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% ============================================================================ 
+\section{System Architecture Design}
+
+\subsection{High-Level Architecture Overview}
+
+The AAQIS system follows a simplified layered architecture pattern, prioritizing maintainability.
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
++------------------------------------------------------------------+
+|                    PRESENTATION LAYER                            |
+|  [Django Templates + Bootstrap - Public Dashboard]               |
+|  [Plotly.js for Interactive Visualizations]                      |
++------------------------------------------------------------------+
+                              ^
+                              |
++------------------------------------------------------------------+
+|                    APPLICATION LAYER                             |
+|  [AAQIS-Forecast Module]  [AAQIS-Patterns Module]  [AQI Calc]    |
++------------------------------------------------------------------+
+                              ^
+                              |
++------------------------------------------------------------------+
+|                    DATA PROCESSING LAYER                         |
+|  [Python ETL Scripts]  [pandas/numpy]  [Data Validation]         |
++------------------------------------------------------------------+
+                              ^
+                              |
++------------------------------------------------------------------+
+|                    DATA STORAGE LAYER                            |
+|  [PostgreSQL - All Data: Time Series, Metadata, Users]           |
++------------------------------------------------------------------+
+                              ^
+                              |
++------------------------------------------------------------------+
+|                    DATA INGESTION LAYER                          |
+|  [Scheduled Tasks - Hourly Data Polling]                         |
+|  [OpenAQ API]  [AQICN API]  [OpenWeatherMap API]                 |
++------------------------------------------------------------------+
+\end{verbatim}
+\caption{High-Level System Architecture}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Layer Descriptions}
+
+\textbf{Data Ingestion Layer:} Responsible for collecting data via scheduled tasks (cron or Django management commands). It includes API clients for OpenAQ (historical and reference data), AQICN (real-time AQI and forecasts), and OpenWeatherMap (meteorological context).
+
+\textbf{Data Processing Layer:} Implements the ETL pipeline. It handles format standardization, timestamp normalization (UTC), unit conversion, and data quality checks (range limits, outlier detection).
+
+\textbf{Application Layer:} Contains the core analytical logic.
+\begin{itemize}
+    \item \textbf{AAQIS-Forecast:} Uses historical $\text{PM}_{2.5}$ data, lag features, and meteorological variables to predict pollutant concentrations for 24--48 hours using LSTM and SVR models.
+    \item \textbf{AAQIS-Patterns:} Performs correlation analysis between $\text{PM}_{2.5}$ and meteorological factors, seasonal decomposition to identify trends, and anomaly detection to flag pollution episodes.
+    \item \textbf{AQI Calculator:} Computes Air Quality Index based on U.S. EPA and WHO standards, with health recommendations.
+\end{itemize}
+
+\textbf{Presentation Layer:} Provides the user interface using \textbf{Django Templates} with Bootstrap for responsive design and Plotly.js for interactive visualizations.
+
+\subsection{Deployment Architecture}
+
+The system is designed for \textbf{Local Containerized Deployment} using Docker Compose. This ensures reproducibility for development and demonstration, and allows for easy migration to a cloud VPS if required in the future.
+
+\textbf{Docker Services:}
+\begin{itemize}
+    \item \texttt{web}: Django application (development server);
+    \item \texttt{postgres}: Database.
+\end{itemize}
+
+\textbf{Deployment on a Local Machine (for Thesis Defense):}
+To deploy the system for local development and demonstration (e.g., during a thesis defense), the following steps can be taken:
+\begin{enumerate}
+    \item Clone the repository: \texttt{git clone <repository\_url> aaqis}
+    \item Navigate to the project directory: \texttt{cd aaqis}
+    \item Configure environment variables: Create a \texttt{.env} file from \texttt{.env.example} and update necessary credentials (database, API keys).
+    \item Start services: \texttt{docker-compose up --build -d}
+    \item Apply database migrations: \texttt{docker-compose exec web python manage.py migrate}
+    \item Create a superuser: \texttt{docker-compose exec web python manage.py createsuperuser}
+    \item Access the application: Open a web browser to \texttt{http://localhost:8000}.
+\end{enumerate}
+This approach prioritizes:
+\begin{itemize}
+    \item \textbf{Simplicity:} A single \texttt{docker-compose} command to start all services.
+    \item \textbf{Reproducibility:} Consistent environment across all machines.
+    \item \textbf{Cost-effectiveness:} No external infrastructure costs required.
+    \item \textbf{Demonstrability:} Easy setup for thesis defense and presentations.
+\end{itemize}
+
+
+% ============================================================================ 
+\section{Data Processing Methodology}
+
+\subsection{Data Collection and Cleaning}
+
+Data is collected hourly. The cleaning process involves:
+\begin{enumerate}
+    \item \textbf{Format Standardization:} Parsing JSON/CSV/HTML into a unified schema.
+    \item \textbf{Timestamp Handling:} Alignment to hourly intervals in UTC.
+    \item \textbf{Missing Value Treatment:} Linear interpolation for gaps $<3$ hours; ML-based imputation for longer gaps.
+\end{enumerate}
+
+\subsection{Feature Engineering}
+
+\textbf{Temporal Features:} Hour of day, Day of week, Month, Season, Holiday flags --- capturing daily and seasonal pollution patterns characteristic of Astana's continental climate.
+
+\textbf{Lag Features:} $\text{PM}_{2.5}$ values at $t-1, t-2, ..., t-24$ hours --- leveraging autocorrelation in air quality time series for improved forecast accuracy.
+
+\textbf{Meteorological Features:} Temperature, Humidity, Wind Speed, Atmospheric Pressure --- key factors influencing pollutant dispersion and accumulation.
+
+\textbf{Derived Features:} Rolling averages (24h, 7d), rate of change, deviation from seasonal mean --- providing additional context for pattern recognition.
+
+\subsection{Model Training and Validation}
+
+Training uses the historical $\text{PM}_{2.5}$ dataset from OpenAQ (U.S. Embassy station, 2018--2023, approximately 16,000 hourly measurements). The data is split temporally: 70\% training (2018--2021), 15\% validation (2022), 15\% test (2023) to prevent data leakage and ensure temporal validity.
+
+\textbf{Evaluation Metrics:}
+\begin{itemize}
+    \item \textbf{RMSE} (Root Mean Square Error): Primary metric for forecast accuracy;
+    \item \textbf{MAE} (Mean Absolute Error): Robust to outliers;
+    \item \textbf{$R^2$} (Coefficient of Determination): Proportion of variance explained;
+    \item \textbf{MAPE} (Mean Absolute Percentage Error): Interpretable percentage error.
+\end{itemize}
+
+Time-series cross-validation with expanding window is employed to ensure model robustness across different time periods.
+
+\section*{Chapter 2 Conclusions}
+
+The second chapter presented the system design and methodology. Main conclusions:
+\begin{enumerate}
+    \item A simplified Python-based stack (Django, PostgreSQL, Scikit-learn, Keras) was selected to prioritize implementability within the diploma project scope.
+    \item The system architecture focuses on two core modules: \textbf{AAQIS-Forecast} for $\text{PM}_{2.5}$ prediction using LSTM/SVR models, and \textbf{AAQIS-Patterns} for correlation and seasonal analysis.
+    \item Primary data source is the U.S. Embassy reference station (via OpenAQ API), providing 5+ years of validated hourly $\text{PM}_{2.5}$ measurements --- sufficient for training robust forecasting models.
+    \item Real-time data integration via AQICN API enables live dashboard updates and current AQI display.
+    \item A containerized deployment strategy using Docker Compose ensures reproducibility for development and thesis defense demonstration.
+\end{enumerate}
+
+The next chapter will present the practical implementation, including model training results, performance metrics, and the web dashboard interface.
+
+\end{document}

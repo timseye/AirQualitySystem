@@ -1,0 +1,47 @@
+1. Wang, A., et al. (2023). Key Themes, Trends, and Drivers of Mobile Ambient Air Quality Monitoring: A Systematic Review and Meta-Analysis. _Environmental Science & Technology_.
+
+2. Sladojevic, S., et al. (2024). Advancements in Mobile-Based Air Pollution Detection: From Literature Review to Practical Implementation. _Journal of Sensors_.
+
+3. Elbestar, M., & Aly, S. G. (2024). Advances in Air Quality Monitoring: A Comprehensive Review of Image-Based and Sensor-Based Techniques. _Advanced Sensor Research_.
+
+4. Mitreska Jovanovska, E., et al. (2023). Methods for Urban Air Pollution Measurement and Forecasting: Challenges, Opportunities, and Solutions. _Atmosphere_ (Обзор методов ML/DL).
+
+5. Shahid, S., et al. (2025). Innovations in Air Quality Monitoring: Sensors, IoT and Future Research. _Sensors_.
+
+6. Ranganathan, R. H., et al. (2023). Air Quality Monitoring and Analysis for Sustainable Development of Solid Waste Dump Yards Using Smart Drones and Geospatial Technology. _Sustainability_.
+
+7. Sokolova, O., et al. (2025). Development of Air Quality Monitoring Systems: Balancing Infrastructure Investment and User Satisfaction Policies. _Sensors_ (Оптимизация сетей, ML для предупреждений).
+
+8. Rahman, M. M., et al. (2024). AirNet: predictive machine learning model for air quality forecasting. _Environmental Systems Research_ (Применение RF, DT, LSTM).
+
+9. Sharipova, S., et al. (2025). Development of a neural network-based module for forecasting atmospheric pollutant emissions. _Scientific Journal of Astana IT University_ (LSTM, Astana).
+
+10. Rakhimberdina, A., et al. (2025). Development of a Prediction Model for the Assessment of Air Quality in the City of Astana, Kazakhstan. (Применение SVR и пространственных факторов).
+
+11. Bissengaliyeva, D., et al. (2023). Determination of the Reliability of Air Pollution Measurement Data Based on Vehicular Emission Recognized as Concomitant in Astana. _Scientific Journal of Astana IT University_ (Сравнение данных Сенсоров Sergek и US Embassy, использование Python).
+
+12. Kerimray, A., et al. (2020). Spatiotemporal Variations and Contributing Factors of Air Pollutants in Almaty, Kazakhstan. _Aerosol Air Qual. Res._.
+
+13. WHO. (2021). Global Air Quality Guidelines: Particulate Matter (PM2.5 and PM10), Ozone, Nitrogen Dioxide, Sulfur Dioxide and Carbon Monoxide (Фундаментальная ссылка).
+
+14. Morawska, L., et al. (2018). Applications of Low-Cost Sensing Technologies for Air Quality Monitoring and Exposure Assessment: How Far Have They Gone? _Environ. Int._.
+
+15. Mui, W., et al. (2021). Development of a Performance Evaluation Protocol for Air Sensors Deployed on a Google Street View Car. _Environmental Science & Technology_.
+
+16. Drajic, D. D., & Gligoric, N. R. (2020). Reliable low-cost air quality monitoring using off-the-shelf sensors and statistical calibration. _Elektronika ir Elektrotechnika_.
+
+17. Dunea, D., & Lungu, E. (2015). An Environmental Mapping System for Airborne Particulate Matter Monitoring in Urban Areas. _Adv. Softw. Eng. Syst._ (Геопространственный мониторинг).
+
+18. Jin, X.-B., et al. (2023). Deep spatio-temporal graph network with self-optimization for air quality prediction. _Entropy_ (Сложное DL-прогнозирование).
+
+19. Shwartz-Ziv, R., & Armon, A. (2021). Tabular Data: Deep Learning Is Not All You Need (Общее методологическое обсуждение).
+
+20. Kerckhoffs, J., et al. (2019). Performance of Prediction Algorithms for Modeling Outdoor Air Pollution Spatial Surfaces. _Environ. Sci. Technol._ (Сравнение алгоритмов).
+
+21. Martin, R. V., et al. (2019). No One Knows Which City Has the Highest Concentration of Fine Particulate Matter. _Atmos Environ. X_ (Проблема данных).
+
+22. The World Air Quality Index Project Team. _Air Quality Programmatic APIs_ (API Reference).
+
+23. RGP Kazhydromet. _Monitoring the state of the environment_ (Перечень загрязнителей).
+
+24. OpenWeatherMap. _Air Pollution API_ (API Reference).
