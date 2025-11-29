@@ -1,0 +1,935 @@
+% ============================================================================
+% DIPLOMA THESIS - Full Document
+% Topic: Development of a System for Analyzing and Visualizing Air Quality 
+%        in Astana Using Data Analysis Techniques
+% Author: [Your Name]
+% University: Astana IT University
+% Year: 2025
+% ============================================================================
+
+\documentclass[12pt,a4paper]{report}
+
+% ===== PACKAGES =====
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{float}
+
+% ===== PAGE GEOMETRY =====
+\geometry{
+    left=3cm,
+    right=2cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% ===== LINE SPACING =====
+\onehalfspacing
+
+% ===== HYPERREF SETUP =====
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% ===== HEADER/FOOTER =====
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ===== TITLE FORMAT =====
+\titleformat{\chapter}[display]
+    {\normalfont\Large\bfseries\centering}
+    {\chaptertitlename\ \thechapter}{20pt}{\LARGE}
+
+% ============================================================================
+\begin{document}
+
+% ===== TITLE PAGE =====
+\begin{titlepage}
+\centering
+\vspace*{1cm}
+
+{\large\textbf{ASTANA IT UNIVERSITY}}\\[0.5cm]
+{\large Department of Computer Science}\\[2cm]
+
+{\Large DIPLOMA THESIS}\\[1cm]
+
+{\LARGE\textbf{Development of a System for Analyzing and Visualizing Air Quality in Astana Using Data Analysis Techniques}}\\[2cm]
+
+\begin{flushleft}
+\hspace{8cm}Student: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\\[0.3cm]
+\hspace{8cm}Scientific Supervisor: \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\\[0.3cm]
+\end{flushleft}
+
+\vfill
+
+{\large Astana, 2025}
+\end{titlepage}
+
+% ===== TABLE OF CONTENTS =====
+\tableofcontents
+\newpage
+
+
+% ============================================================================
+% INTRODUCTION
+% ============================================================================
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+\section*{Research Relevance}
+
+Air pollution is recognized as one of the most serious environmental threats to public health on a global scale. According to the World Health Organization (WHO), exposure to polluted air causes millions of premature deaths annually, and the burden of disease attributable to air pollution is comparable to risk factors such as unhealthy diet and tobacco smoking \cite{who2021}. In 2015, the World Health Assembly adopted a resolution recognizing air pollution as a risk factor for non-communicable diseases, including ischemic heart disease, stroke, chronic obstructive pulmonary disease, asthma, and cancer.
+
+Astana, the capital of the Republic of Kazakhstan, is characterized by a unique combination of factors affecting air quality: a sharply continental climate with extreme seasonal temperature variations (from $-40^{\circ}$C in winter to $+40^{\circ}$C in summer), intensive urban development, significant vehicular traffic, and proximity to industrial facilities. Studies conducted in Kazakhstan demonstrate substantial spatiotemporal variability in pollutant concentrations \cite{kerimray2020, bissengaliyeva2023}.
+
+Traditional monitoring methods based solely on data from stationary posts of state networks do not always provide sufficient spatial resolution and timeliness for management decision-making. At the same time, the rapid development of Internet of Things (IoT) technologies, low-cost sensors, and machine learning methods opens new opportunities for creating intelligent air quality monitoring and forecasting systems \cite{shahid2025, morawska2018}.
+
+The relevance of this work is driven by the need to develop a comprehensive system capable of integrating heterogeneous data sources, providing accurate pollution level forecasting, and delivering scientifically-based information to regulators and the public.
+
+
+\section*{Object of Study}
+
+The object of study is the process of monitoring and analyzing ambient air quality in the city of Astana.
+
+
+\section*{Subject of Study}
+
+The subject of study is the application of machine learning methods and data analysis techniques for:
+
+\begin{enumerate}
+    \item \textbf{Machine Learning (ML) methods} for complex nonlinear spatiotemporal analysis:
+    \begin{itemize}
+        \item Time series forecasting models: Support Vector Regression (SVR), Long Short-Term Memory (LSTM), and their hybrid variants;
+        \item Statistical pattern analysis methods: correlation analysis, seasonal decomposition (STL), and anomaly detection.
+    \end{itemize}
+    
+    \item \textbf{Architectural strategies} for integrating highly heterogeneous air quality data:
+    \begin{itemize}
+        \item Data from mandatory state networks (RGP Kazhydromet with 127+ automatic posts);
+        \item International reference stations (U.S. Embassy post);
+        \item Low-cost sensor systems and commercial APIs.
+    \end{itemize}
+    
+    \item \textbf{Data Quality Assurance (DQA) methodologies} and ETL (Extract-Transform-Load) pipelines for unifying heterogeneous information flows.
+\end{enumerate}
+
+
+\section*{Research Goal}
+
+The primary goal is the design, development, and validation of a robust, data-driven Air Quality Intelligence System (AAQIS) for the city of Astana. The system should provide:
+
+\begin{enumerate}
+    \item Accurate short-term (24--48 hours) forecasts of key pollutant concentrations, primarily $\text{PM}_{2.5}$;
+    \item Identification and quantification of seasonal and diurnal pollution patterns through correlation analysis with meteorological factors;
+    \item Clear visualization of monitoring data, forecasts, and analytical results through a web interface for the public.
+\end{enumerate}
+
+
+\section*{Research Tasks}
+
+To achieve the stated goal, the following tasks must be completed:
+
+\textbf{Task 1: Systematic Literature Review.} Conduct a systematic review of the current state of air quality monitoring technologies (including IoT sensor networks and open data APIs) and the application of ML/DL models for air quality forecasting. The review should cover at least 20 peer-reviewed scientific publications from IEEE, Scopus, Springer databases and authoritative institutional reports (WHO, U.S. EPA).
+
+\textbf{Task 2: Monitoring Ecosystem Analysis.} Analyze the existing data monitoring ecosystem in Astana (RGP Kazhydromet, U.S. Embassy post, local sensor networks) to identify specific problems: heterogeneity of data formats and temporal resolutions; limited programmatic accessibility (absence of public APIs); data quality issues (gaps, outliers, sensor drift).
+
+\textbf{Task 3: DQA/ETL Methodology Development.} Define and formalize a robust Data Quality Assurance (DQA) methodology and ETL pipeline necessary for integrating and harmonizing multi-parametric data streams into a Unified Data Model (UDM).
+
+\textbf{Task 4: ML Model Development and Implementation.} Develop and implement specialized ML models: AAQIS-Forecast (SVR and LSTM models for forecasting $\text{PM}_{2.5}$ concentrations at 24--48 hour horizons); AAQIS-Patterns (correlation analysis and seasonal decomposition to identify pollution patterns and their relationship with meteorological factors).
+
+\textbf{Task 5: Model Validation.} Conduct rigorous validation of the predictive capabilities of the developed forecasting models on historical data, with benchmarking against reference data from the U.S. Embassy monitoring station. Compare model performance using standard metrics (RMSE, MAE, $R^2$).
+
+
+\section*{Research Hypothesis}
+
+\textbf{Hypothesis:} The application of modern machine learning methods, specifically Long Short-Term Memory (LSTM) neural networks and Support Vector Regression (SVR), trained on validated historical $\text{PM}_{2.5}$ data from the U.S. Embassy reference monitoring station in Astana (2018--2023), will provide accurate short-term (24--48 hour) air quality forecasts with prediction errors (RMSE) at least 20\% lower than baseline statistical methods (persistence model, moving average).
+
+Furthermore, correlation analysis between $\text{PM}_{2.5}$ concentrations and meteorological factors (temperature, humidity, wind speed) will reveal statistically significant seasonal and diurnal patterns that can inform public health advisories and urban planning decisions.
+
+
+\section*{Scientific Novelty}
+
+\begin{enumerate}
+    \item For the first time for the city of Astana, a comprehensive web-based air quality monitoring and forecasting system has been developed, integrating real-time data from international APIs (AQICN, OpenAQ) with machine learning prediction models.
+    \item A comparative analysis of LSTM and SVR models for $\text{PM}_{2.5}$ forecasting in Astana's specific climatic conditions (sharply continental climate with extreme seasonal variations) has been conducted.
+    \item A methodology for automated data collection, cleaning, and harmonization from heterogeneous air quality APIs has been developed and implemented.
+    \item Seasonal and diurnal patterns of $\text{PM}_{2.5}$ concentrations in Astana have been quantitatively characterized through correlation analysis with meteorological factors.
+\end{enumerate}
+
+
+\section*{Practical Significance}
+
+The practical significance of the work is determined by the possibility of using the developed AAQIS system for:
+\begin{enumerate}
+    \item Operational public information about current and forecasted air quality in Astana through an accessible web dashboard with intuitive visualizations;
+    \item Providing 24--48 hour $\text{PM}_{2.5}$ forecasts to help citizens plan outdoor activities and protect vulnerable groups (children, elderly, people with respiratory conditions);
+    \item Demonstrating the feasibility of building cost-effective air quality monitoring systems using open data sources and modern ML techniques;
+    \item Creating a foundation for future expansion to include additional pollutants and cities across Kazakhstan as more data becomes available.
+\end{enumerate}
+
+
+\section*{Thesis Structure}
+
+The diploma thesis consists of an introduction, three chapters, a conclusion, a list of references, and appendices.
+
+The first chapter presents the theoretical foundations of intelligent air quality analysis. The second chapter presents the analysis of the subject domain and system design methodology. The third chapter describes the practical implementation of the system and experimental results.
+
+
+% ============================================================================
+% CHAPTER 1
+% ============================================================================
+\chapter{Theoretical Foundations of Intelligent Ambient Air Quality Analysis}
+
+The first chapter is devoted to systematizing theoretical knowledge and modern scientific achievements in the field of monitoring, analysis, and forecasting of ambient air quality. The chapter is structured as follows: Section 1.1 examines key atmospheric pollutants and their health impacts; Section 1.2 is devoted to reviewing modern monitoring technologies; Section 1.3 analyzes data quality and heterogeneity problems; Section 1.4 contains an overview of machine learning methods for forecasting and pattern analysis; Section 1.5 examines architectural approaches to building intelligent monitoring systems.
+
+
+\section{Ambient Air Pollution and Public Health Risks}
+
+\subsection{Definition and Classification of Atmospheric Pollutants}
+
+Air pollution refers to the presence of substances in the atmosphere at concentrations exceeding natural background levels and capable of adversely affecting human health, ecosystems, and material objects. The World Health Organization and national regulatory bodies identify six main (``criteria'') pollutants subject to mandatory monitoring \cite{who2021, epa2014}:
+
+\begin{enumerate}
+    \item \textbf{Particulate Matter (PM):}
+    \begin{itemize}
+        \item $\text{PM}_{2.5}$ --- particles with an aerodynamic diameter of less than 2.5 micrometers;
+        \item $\text{PM}_{10}$ --- particles with a diameter of less than 10 micrometers.
+    \end{itemize}
+    Particulate matter is the most dangerous component of urban pollution due to its ability to penetrate deep into the respiratory system and even into the bloodstream (in the case of ultrafine particles $\text{PM}_{0.1}$).
+    
+    \item \textbf{Nitrogen Dioxide ($\text{NO}_2$):} Formed during high-temperature combustion processes. A marker of vehicular emissions.
+    
+    \item \textbf{Sulfur Dioxide ($\text{SO}_2$):} Characteristic of emissions from coal and oil combustion. A marker of industrial and energy sector emissions.
+    
+    \item \textbf{Carbon Monoxide (CO):} Formed during incomplete combustion. High concentrations are hazardous to human health.
+    
+    \item \textbf{Ozone ($\text{O}_3$):} Secondary pollutant formed in the atmosphere as a result of photochemical reactions involving $\text{NO}_x$ and VOCs.
+    
+    \item \textbf{Lead (Pb):} Heavy metal, currently significantly reduced due to the phase-out of leaded gasoline.
+\end{enumerate}
+
+In addition, for specific regions, the following may be relevant: Hydrogen Sulfide ($\text{H}_2\text{S}$) --- characteristic of oil and gas industry regions and the Caspian region of Kazakhstan \cite{kerimray2020}; formaldehyde and other volatile organic compounds (VOCs).
+
+
+\subsection{Impact of Air Pollution on Public Health}
+
+A meta-analysis of epidemiological studies demonstrates a statistically significant relationship between air pollutant concentrations and a wide range of health effects \cite{who2021}:
+
+\textbf{Respiratory System:} Exacerbation of asthma; chronic obstructive pulmonary disease (COPD); reduced lung function; increased susceptibility to respiratory infections.
+
+\textbf{Cardiovascular System:} Ischemic heart disease; stroke; hypertension.
+
+\textbf{Carcinogenic Effects:} Lung cancer (outdoor air pollution classified by IARC as a Group 1 carcinogen).
+
+\textbf{Neurological Effects:} Emerging evidence on neurodevelopmental effects and cognitive decline.
+
+\textbf{Vulnerable Groups:} Children; elderly; people with pre-existing respiratory and cardiovascular conditions; outdoor workers.
+
+
+\subsection{WHO Air Quality Guidelines}
+
+In 2021, the World Health Organization published updated Global Air Quality Guidelines (AQG), significantly tightening recommendations for acceptable pollutant concentrations \cite{who2021}:
+
+\begin{table}[H]
+\centering
+\caption{WHO Air Quality Guidelines 2021}
+\label{tab:who_guidelines}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Pollutant} & \textbf{Averaging Period} & \textbf{AQG Level} \\
+\midrule
+$\text{PM}_{2.5}$ & Annual mean & 5 $\mu$g/m$^3$ \\
+$\text{PM}_{2.5}$ & 24-hour mean & 15 $\mu$g/m$^3$ \\
+$\text{PM}_{10}$ & Annual mean & 15 $\mu$g/m$^3$ \\
+$\text{PM}_{10}$ & 24-hour mean & 45 $\mu$g/m$^3$ \\
+$\text{NO}_2$ & Annual mean & 10 $\mu$g/m$^3$ \\
+$\text{NO}_2$ & 24-hour mean & 25 $\mu$g/m$^3$ \\
+$\text{SO}_2$ & 24-hour mean & 40 $\mu$g/m$^3$ \\
+$\text{O}_3$ & 8-hour mean & 100 $\mu$g/m$^3$ \\
+CO & 24-hour mean & 4 mg/m$^3$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+It should be noted that WHO guidelines are recommendations and are not legally binding. National standards may differ (typically being less stringent).
+
+
+\subsection{Air Quality Indices}
+
+To communicate air quality status to the public, aggregate Air Quality Index (AQI) scales are used. The most widely used indices include:
+
+\textbf{U.S. EPA AQI:} A 6-level scale (from ``Good'' to ``Hazardous'') based on concentrations of criteria pollutants, widely used internationally \cite{epa2014}.
+
+\textbf{European CAQI:} Common Air Quality Index developed for EU countries.
+
+\textbf{China AQI:} National index accounting for local conditions.
+
+The general formula for calculating sub-index for pollutant $p$:
+\begin{equation}
+\text{AQI}_p = \frac{I_{hi} - I_{lo}}{BP_{hi} - BP_{lo}} \times (C_p - BP_{lo}) + I_{lo}
+\end{equation}
+where $C_p$ is the pollutant concentration, $BP$ are breakpoints, and $I$ are corresponding index values. The overall AQI is the maximum of all pollutant sub-indices.
+
+
+\section{Modern Air Quality Monitoring Technologies}
+
+\subsection{Classification of Monitoring Systems}
+
+Air quality monitoring systems can be classified according to several criteria:
+
+\textbf{By Measurement Principle:}
+\begin{itemize}
+    \item Reference (regulatory-grade) equipment;
+    \item Low-cost sensors (LCS);
+    \item Satellite observations (remote sensing);
+    \item Mobile monitoring platforms.
+\end{itemize}
+
+\textbf{By Deployment Model:}
+\begin{itemize}
+    \item Fixed (stationary) networks;
+    \item Mobile measurements;
+    \item Personal exposure assessment devices.
+\end{itemize}
+
+\textbf{By Data Accessibility:}
+\begin{itemize}
+    \item Government (closed systems);
+    \item Open data platforms;
+    \item Commercial systems.
+\end{itemize}
+
+
+\subsection{Regulatory Monitoring Networks}
+
+Regulatory networks are operated by government agencies and form the basis for assessing air quality status and compliance with standards.
+
+\textbf{Characteristics of Regulatory Stations:}
+\begin{itemize}
+    \item High accuracy (meeting metrological requirements);
+    \item Regular calibration and quality control;
+    \item Complete set of criteria pollutants;
+    \item High cost (from tens of thousands to hundreds of thousands of dollars per station);
+    \item Limited spatial coverage (typically 1 station per 100,000--500,000 population).
+\end{itemize}
+
+\textbf{Data Availability:} In many countries (including Kazakhstan), regulatory data is not always available in real-time through public APIs, limiting its use for operational systems.
+
+
+\subsection{Low-Cost Sensors and IoT Systems}
+
+The development of low-cost sensor (LCS) technology opens new opportunities for densifying monitoring networks \cite{morawska2018, drajic2020}:
+
+\textbf{Sensor Types:} Optical particle counters (for PM); electrochemical sensors (for gases $\text{NO}_2$, $\text{SO}_2$, CO, $\text{O}_3$); metal oxide sensors (MOS).
+
+\textbf{Advantages:} Low cost (from tens to several hundred dollars); compact size; Internet connectivity (IoT); possibility of dense network deployment.
+
+\textbf{Limitations and Challenges:} Lower accuracy compared to reference equipment; susceptibility to humidity, temperature, cross-sensitivity effects; measurement drift over time; need for calibration and collocation studies.
+
+\textbf{Low-Cost Sensor Calibration:} To ensure data quality, calibration using reference equipment is necessary \cite{drajic2020, mui2021}: collocation with reference stations; statistical calibration (linear/polynomial regression); ML calibration (Random Forest, neural networks); accounting for meteorological parameters (temperature, humidity).
+
+
+\subsection{Mobile Monitoring}
+
+Mobile platforms equipped with sensors are mounted on: public transport vehicles; postal service vehicles; dedicated monitoring vehicles; drones and UAVs.
+
+\textbf{Advantages:} Increased spatial coverage; ability to identify pollution hotspots; lower cost compared to dense fixed networks.
+
+\textbf{Challenges:} Temporal mismatch of data; complex spatial analysis; need for sophisticated data fusion algorithms.
+
+
+\subsection{Satellite Monitoring and Remote Sensing}
+
+Satellite instruments provide a global view of air quality through retrieval of aerosol and gas parameters from reflected/emitted radiation.
+
+\textbf{Satellite Systems:} MODIS (Terra/Aqua); Sentinel-5P (TROPOMI); GOES-ABI (geostationary).
+
+
+\section{Data Quality and Heterogeneity Challenges}
+
+\subsection{Sources of Data Heterogeneity}
+
+Multi-source data integration faces several challenges:
+
+\textbf{Temporal heterogeneity:} Different temporal resolutions (1-minute, hourly, daily averages); temporal misalignment; timezone differences.
+
+\textbf{Spatial heterogeneity:} Point measurements vs. area averages (satellite); different site representativeness.
+
+\textbf{Measurement heterogeneity:} Different measurement principles; different accuracy and precision; different units and reference conditions.
+
+
+\subsection{Data Quality Issues}
+
+Common issues include: missing values (equipment malfunction, power outages, maintenance); outliers and anomalies (calibration errors, interference); drift (gradual sensor degradation); inconsistencies between sources.
+
+
+\subsection{Data Quality Assurance Methods (DQA)}
+
+\textbf{Automated Checks:} Range checks; rate-of-change checks; consistency checks between parameters; statistical outlier tests (z-score, IQR).
+
+\textbf{Missing Value Imputation Methods:} Linear interpolation (for short gaps); seasonal decomposition (STL); k-NN imputation considering spatial correlation; ML methods (Random Forest, MICE).
+
+\textbf{Calibration and Correction:} Linear regression against reference data; multivariate correction (accounting for T, RH); ML calibration.
+
+
+\subsection{Data Accessibility Challenge}
+
+A critical barrier for intelligent system development is limited data accessibility. Government networks often lack public APIs, and data may be available only through manual requests or web scraping. International platforms like OpenAQ and AQICN address this gap by aggregating and standardizing data from multiple sources.
+
+
+\section{Machine Learning Methods for Air Quality Analysis}
+
+\subsection{Overview of ML Applications in Air Quality Tasks}
+
+\textbf{Main ML Tasks in the Air Quality Domain:}
+\begin{enumerate}
+    \item Concentration forecasting (regression/time series forecasting) --- \textit{primary focus of this work};
+    \item Pattern analysis and correlation with meteorological factors --- \textit{secondary focus of this work};
+    \item Pollution level classification (AQI category prediction);
+    \item Source apportionment (requires multi-pollutant data);
+    \item Low-cost sensor calibration;
+    \item Spatial interpolation (spatial prediction);
+    \item Anomaly detection.
+\end{enumerate}
+
+
+\subsection{Models for Time Series Forecasting}
+
+\textbf{Support Vector Regression (SVR):} A kernel-based method for regression problems, widely used in environmental time series forecasting \cite{kerckhoffs2019}.
+
+\textit{Principle:} Mapping data to high-dimensional feature space via kernel function; finding a hyperplane that minimizes prediction error within an $\varepsilon$-tube.
+
+\textit{Kernels:} Linear; Polynomial; Radial Basis Function (RBF) --- most common for air quality.
+
+\textit{Advantages:} Effective for medium-sized datasets (10,000--100,000 samples); good generalization with proper regularization; works well with nonlinear relationships.
+
+\textit{Limitations:} Scales poorly to very large datasets; sensitive to hyperparameter selection (C, $\gamma$, $\varepsilon$).
+
+\textbf{Long Short-Term Memory (LSTM) Networks:} A specialized type of recurrent neural network designed to capture long-range dependencies in sequential data \cite{shahid2025}.
+
+\textit{Architecture:} Comprises memory cells with input, forget, and output gates; cell state for long-term information storage; hidden state for short-term information.
+
+\textit{LSTM Advantages for Air Quality Forecasting:} Ability to capture long-term temporal dependencies; accounting for seasonal patterns (daily, weekly, annual cycles); capability to work with multiple input features; scalability for large datasets.
+
+A study by Sharipova et al. (2025), conducted on Astana data, demonstrated the effectiveness of LSTM for forecasting atmospheric pollutant emissions with high accuracy \cite{sharipova2025}.
+
+\textbf{Hybrid and Ensemble Models:} Modern research demonstrates the benefits of combining models \cite{jin2023}: CNN-LSTM for extracting spatiotemporal features; attention mechanisms for weighting the importance of time steps; Graph Neural Networks for accounting spatial relationships between stations; ensemble methods for improving robustness.
+
+
+\subsection{Statistical Methods for Pattern Analysis}
+
+\textbf{Correlation Analysis:} Quantifying relationships between pollutant concentrations and influencing factors (meteorological parameters, temporal features) is essential for understanding pollution dynamics \cite{who2021}.
+
+\textit{Methods:} Pearson correlation coefficient for linear relationships; Spearman rank correlation for non-linear monotonic relationships; partial correlation to control for confounding variables; cross-correlation for time-lagged relationships.
+
+\textbf{Seasonal Decomposition:} Time series decomposition methods separate observed data into interpretable components:
+\begin{itemize}
+    \item STL (Seasonal and Trend decomposition using Loess): robust decomposition into trend, seasonal, and residual components;
+    \item Fourier analysis: identification of periodic patterns at different frequencies (diurnal, weekly, annual cycles);
+    \item Moving averages: smoothing for trend extraction.
+\end{itemize}
+
+\textbf{Anomaly Detection:} Identifying pollution episodes and unusual events is important for public health alerts:
+\begin{itemize}
+    \item Statistical methods: z-score, IQR-based detection;
+    \item Machine learning approaches: Isolation Forest, Local Outlier Factor;
+    \item Domain-specific thresholds: AQI category transitions, health guideline exceedances.
+\end{itemize}
+
+
+\subsection{Model Quality Evaluation Metrics}
+
+Standard metrics are used for objective model performance evaluation \cite{kerckhoffs2019}:
+
+\textbf{Regression Metrics (Forecasting):}
+\begin{itemize}
+    \item $R^2$ (coefficient of determination): proportion of explained variance;
+    \item MSE (Mean Squared Error);
+    \item RMSE (Root Mean Squared Error);
+    \item MAE (Mean Absolute Error);
+    \item MAPE (Mean Absolute Percentage Error).
+\end{itemize}
+
+For time series forecasting, RMSE is typically the primary metric as it penalizes larger errors more heavily, which is important for air quality applications where missing a pollution episode can have health consequences.
+
+
+\subsection{Feature Selection and Feature Engineering}
+
+Prediction quality significantly depends on input feature selection:
+
+\textbf{Feature Types for Air Quality Models:}
+\begin{enumerate}
+    \item Pollutant concentrations ($\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{NO}_2$, $\text{SO}_2$, $\text{O}_3$, CO);
+    \item Meteorological parameters (T, RH, pressure, wind speed and direction);
+    \item Temporal features (hour of day, day of week, month, holidays);
+    \item Spatial features (distance to roads, industrial zones, elevation);
+    \item Lagged values for time series.
+\end{enumerate}
+
+
+\section{Architectural Approaches to Intelligent Monitoring Systems}
+
+\subsection{Architectural Patterns}
+
+Intelligent air quality monitoring systems typically follow layered or microservices architectures:
+
+\textbf{Layered Architecture:} Data ingestion layer; data processing layer; analytics/ML layer; presentation layer.
+
+\textbf{Microservices Approach:} Independent services for data collection, processing, and API delivery; enables scaling and independent deployment.
+
+
+\subsection{Data Pipeline Design}
+
+Modern systems employ ETL (Extract-Transform-Load) or ELT patterns:
+
+\textbf{ETL Components:} Extract from heterogeneous sources (APIs, files, databases); Transform (cleaning, normalization, feature engineering); Load into unified storage.
+
+
+\subsection{AAQIS Conceptual Architecture}
+
+Based on the literature review, the following conceptual architecture is proposed for the Air Quality Intelligence System (AAQIS):
+
+\textbf{Data Sources Layer:} OpenAQ API (historical reference data); AQICN API (real-time data and forecasts); OpenWeatherMap API (meteorological context).
+
+\textbf{ETL Layer:} Scheduled data collection (hourly); format normalization and validation; storage in PostgreSQL database.
+
+\textbf{Analytics Engine Layer:} AAQIS-Forecast (LSTM/SVR models for prediction); AAQIS-Patterns (correlation analysis, seasonal decomposition); AQI Calculator (EPA standard implementation).
+
+\textbf{ML/DL Platforms:} TensorFlow/Keras for LSTM implementation; scikit-learn for SVR and statistical analysis; statsmodels for time series decomposition.
+
+\textbf{Presentation Layer:} Django web application; Plotly.js for interactive visualizations; RESTful API for data access.
+
+
+\subsection{Forecasting Module (AAQIS-Forecast)}
+
+\textbf{Input Data:} Historical pollutant concentrations; meteorological parameters (current and forecast); temporal features.
+
+\textbf{Models:} LSTM for capturing temporal patterns; SVR for reliable short-term forecasts; ensemble for improved robustness.
+
+\textbf{Output Data:} Concentration forecast for 24--48 hours; AQI category forecast; confidence intervals.
+
+
+\subsection{Pattern Analysis Module (AAQIS-Patterns)}
+
+\textbf{Input Data:} Historical $\text{PM}_{2.5}$ concentration data; meteorological parameters (temperature, humidity, wind speed, pressure); temporal features (hour of day, day of week, season).
+
+\textbf{Methods:} Correlation analysis (Pearson, Spearman) to identify relationships between pollutants and meteorological factors; seasonal decomposition (STL) to extract trend, seasonal, and residual components; anomaly detection to flag pollution episodes.
+
+\textbf{Output Data:} Correlation coefficients with confidence intervals; seasonal and diurnal pattern visualizations; identified pollution episodes with potential meteorological triggers.
+
+
+\subsection{User Interface and Visualization}
+
+\textbf{For the Public:} Simplified interface with AQI and health recommendations; map with color-coded air quality indication; forecast for the coming days; alerts for high pollution levels.
+
+\textbf{Dashboard Components:} Current AQI display with color coding; historical time series charts; forecast visualization for 24--48 hours; meteorological context (temperature, wind, humidity); trend analysis and seasonal patterns.
+
+
+\section{Chapter 1 Conclusions}
+
+The first chapter conducted a systematic analysis of theoretical foundations and current state of the field of intelligent ambient air quality analysis. Main conclusions:
+
+\begin{enumerate}
+    \item Air pollution, particularly $\text{PM}_{2.5}$, poses a serious threat to public health. Updated WHO recommendations (2021) establish stricter threshold values, reflecting accumulated evidence about the harm of even low concentrations.
+    
+    \item Modern air quality monitoring is implemented through a multi-level system: regulatory networks provide accurate reference measurements (such as the U.S. Embassy station in Astana), while open APIs (AQICN, OpenAQ) enable programmatic access to air quality data.
+    
+    \item Data integration from heterogeneous sources requires robust ETL pipelines for timestamp normalization, unit conversion, and handling of missing values.
+    
+    \item Machine learning methods, particularly LSTM neural networks and SVR, demonstrate high effectiveness for time series forecasting of pollutant concentrations, capturing both short-term dynamics and seasonal patterns.
+    
+    \item For the city of Astana, the development of an air quality forecasting system is highly relevant given the sharply continental climate (extreme seasonal temperature variations from $-40^{\circ}$C to $+40^{\circ}$C), which significantly impacts pollution levels, particularly during the heating season.
+    
+    \item The AAQIS conceptual architecture should include: multi-source data collection via APIs, robust ETL pipeline, ML forecasting models, and an interactive web dashboard for public access.
+\end{enumerate}
+
+Further work (Chapter 2) will be devoted to detailed analysis of available data sources, justification for tool selection, and development of the system architecture for practical AAQIS implementation.
+
+
+% ============================================================================
+% CHAPTER 2
+% ============================================================================
+\chapter{Analysis of the Subject Domain and System Design Methodology}
+
+\section*{Chapter Introduction}
+
+The second chapter is devoted to the analysis of the subject domain specific to Astana's air quality monitoring ecosystem, the examination of available data sources, justification for the selection of methods and tools, and the development of the system architecture. The chapter is structured as follows: Section 2.1 analyzes the current state of air quality monitoring in Astana; Section 2.2 examines available data sources and their characteristics; Section 2.3 provides justification for the selection of methods and tools; Section 2.4 presents the system architecture design; Section 2.5 describes the data processing methodology.
+
+\textbf{Note on Scope:} Given the limited availability of multi-pollutant historical data for Astana (only $\text{PM}_{2.5}$ measurements are consistently available from the U.S. Embassy reference station), the system focuses on \textbf{forecasting} and \textbf{pattern analysis} rather than complex source apportionment, which would require tracer pollutants ($\text{SO}_2$, $\text{NO}_2$, $\text{H}_2\text{S}$) not available in open datasets.
+
+
+\section{Analysis of Air Quality Monitoring in Astana}
+
+\subsection{Climatic and Geographic Context}
+
+Astana, the capital of the Republic of Kazakhstan, is located in the northern part of the country on the banks of the Ishim River. The city is characterized by a sharply continental climate with extreme temperature variations.
+
+\textbf{Geographic Coordinates:}
+\begin{itemize}
+    \item Latitude: $51.1694^{\circ}$ N
+    \item Longitude: $71.4491^{\circ}$ E
+    \item Elevation: approximately 347 meters above sea level
+\end{itemize}
+
+\textbf{Climate Characteristics:}
+\begin{itemize}
+    \item Winter temperatures: down to $-40^{\circ}$C (January average: $-14.2^{\circ}$C);
+    \item Summer temperatures: up to $+40^{\circ}$C (July average: $+20.8^{\circ}$C);
+    \item Annual precipitation: 300--350 mm;
+    \item Prevailing winds: north and northwest directions;
+    \item Frequent dust storms in spring and autumn periods.
+\end{itemize}
+
+These climatic conditions significantly impact air quality:
+\begin{enumerate}
+    \item Extreme cold in winter leads to increased heating loads and associated emissions from residential and power generation sectors;
+    \item Temperature inversions during winter months trap pollutants near the surface;
+    \item Dust storms from surrounding steppe regions contribute to elevated $\text{PM}_{10}$ concentrations;
+    \item Strong winds can both disperse and transport pollutants over long distances.
+\end{enumerate}
+
+
+\subsection{Primary Emission Sources in Astana}
+
+Understanding emission sources is critical for interpreting pollution patterns. The main pollution sources in Astana include:
+
+\begin{enumerate}
+    \item \textbf{Transportation Sector:} Over 500,000 registered vehicles; intensive traffic on major arterial roads; characteristic pollutants: $\text{NO}_2$, CO, $\text{PM}_{2.5}$ (from diesel), BC.
+    \item \textbf{Power Generation and Heating:} Central heating plants primarily using coal and natural gas; individual heating systems in private residential areas; seasonal pattern with maximum emissions in heating season (October--April).
+    \item \textbf{Construction Activities:} Extensive urban development projects; dust emissions from construction sites (characteristic pollutants: $\text{PM}_{10}$, TSP).
+    \item \textbf{Industrial Facilities:} Industrial zone in the northern part of the city; characteristic pollutants: specific VOCs, $\text{SO}_2$, particulates.
+    \item \textbf{Transboundary and Natural Sources:} Dust transport from arid regions; emissions from neighboring industrial areas; Sand and Dust Storms (SDS).
+\end{enumerate}
+
+
+\subsection{Current Monitoring Infrastructure}
+
+The air quality monitoring infrastructure in Astana consists of several components with different capabilities and coverage:
+
+\textbf{RGP Kazhydromet Network:} Kazhydromet operates the official state monitoring network in Astana, consisting of 5--7 automatic monitoring posts. It measures a wide range of parameters including $\text{PM}_{2.5}$, $\text{PM}_{10}$, $\text{SO}_2$, $\text{NO}_2$, CO, $\text{O}_3$, $\text{H}_2\text{S}$, and formaldehyde with hourly resolution. Data is published on the official website but lacks a public API.
+
+\textbf{U.S. Embassy Air Quality Monitor:} An independent reference-grade BAM-1022 monitor located at the U.S. Embassy compound. It provides hourly $\text{PM}_{2.5}$ measurements according to U.S. EPA protocols and is available via AirNow/AQICN platforms.
+
+\textbf{Commercial and Research Sensors:} Various low-cost sensor deployments exist, including the Sergek system sensors and individual PurpleAir units.
+
+
+\subsection{Identified Challenges and Gaps}
+
+Analysis of the current monitoring ecosystem reveals several critical challenges:
+
+\textbf{Data Accessibility Challenges:}
+\begin{itemize}
+    \item No standardized public API for Kazhydromet data;
+    \item Limited spatial coverage (5--7 stations for 1.3+ million population);
+    \item Data format heterogeneity across different sources.
+\end{itemize}
+
+\textbf{Data Quality Challenges:}
+\begin{itemize}
+    \item Measurement discrepancies between sources;
+    \item Data gaps due to equipment maintenance or power outages;
+    \item Limited tracer measurements needed for robust source apportionment.
+\end{itemize}
+
+
+\section{Data Sources and Their Characteristics}
+
+\subsection{Primary Data Source: RGP Kazhydromet}
+
+RGP Kazhydromet serves as the primary authoritative data source. Table \ref{tab:kazhydromet_pollutants} lists the measured parameters.
+
+\begin{table}[H]
+\centering
+\caption{Pollutants Measured by Kazhydromet Network}
+\label{tab:kazhydromet_pollutants}
+\begin{tabular}{lll}
+\toprule
+\textbf{Category} & \textbf{Pollutant} & \textbf{Typical Units} \\
+\midrule
+Criteria & $\text{PM}_{2.5}$, $\text{PM}_{10}$ & $\mu$g/m$^3$ \\
+Pollutants & $\text{SO}_2$, $\text{NO}_2$, $\text{O}_3$ & $\mu$g/m$^3$ \\
+           & CO & mg/m$^3$ \\
+\midrule
+Tracer & $\text{H}_2\text{S}$, Phenol & $\mu$g/m$^3$ \\
+Components & $\text{NH}_3$, Formaldehyde & $\mu$g/m$^3$ \\
+\midrule
+Heavy Metals & Lead (Pb) & $\mu$g/m$^3$ \\
+             & Cadmium (Cd), Nickel (Ni) & ng/m$^3$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Since no public API is available, data acquisition requires manual download or web scraping. Historical data is available from 2015 onwards with hourly resolution.
+
+
+\subsection{Reference Benchmark: U.S. Embassy Monitor}
+
+The U.S. Embassy PM2.5 monitor (MetOne BAM-1022) provides high-quality reference data. It serves as ground truth for model validation and enables calibration of low-cost sensors. Data is accessible via the AirNow API and AQICN API.
+
+
+\subsection{Supplementary Data Sources}
+
+\textbf{External APIs for Gap-Filling:}
+\begin{itemize}
+    \item \textbf{OpenWeatherMap Air Pollution API:} Global coverage, gap-filling for missing periods.
+    \item \textbf{Google Air Quality API:} Visualization enrichment and health recommendations.
+    \item \textbf{AQICN (World Air Quality Index):} Real-time aggregated data for alerts.
+\end{itemize}
+
+\textbf{Meteorological Data Sources:}
+\begin{itemize}
+    \item \textbf{Kazhydromet Meteorological Stations:} T, RH, Pressure, Wind Speed/Direction.
+    \item \textbf{OpenWeatherMap Weather API:} Hourly conditions and forecasts.
+    \item \textbf{ERA5 Reanalysis Data (ECMWF):} Historical analysis for model training.
+\end{itemize}
+
+
+\subsection{Data Integration Strategy}
+
+The AAQIS system implements a priority hierarchy:
+\begin{enumerate}
+    \item Kazhydromet (primary regulatory data);
+    \item U.S. Embassy (reference benchmark);
+    \item Commercial APIs (gap-filling);
+    \item Meteorological services (feature enrichment).
+\end{enumerate}
+
+Integration solutions include normalizing all timestamps to UTC, converting units to SI ($\mu$g/m$^3$), and using ML imputation for missing values.
+
+
+\section{Justification for Selection of Methods and Tools}
+
+\subsection{Programming Language Selection: Python}
+
+Python (version 3.10+) is selected as the primary development language due to its dominant position in data analysis and machine learning. Key libraries include \textbf{pandas} and \textbf{numpy} for data manipulation, \textbf{scikit-learn} and \textbf{TensorFlow/Keras} for machine learning, and \textbf{Django} for web development.
+
+
+\subsection{Machine Learning Model Selection}
+
+\textbf{For Forecasting (AAQIS-Forecast Module):}
+\begin{itemize}
+    \item \textbf{Long Short-Term Memory (LSTM):} Selected for its ability to capture long-term temporal dependencies and seasonal patterns in time series data.
+    \item \textbf{Support Vector Regression (SVR):} Selected as a robust alternative for medium-sized datasets, effective in modeling nonlinear relationships.
+\end{itemize}
+
+\textbf{For Pattern Analysis (AAQIS-Patterns Module):}
+\begin{itemize}
+    \item \textbf{Correlation Analysis:} Pearson and Spearman correlation coefficients to identify relationships between $\text{PM}_{2.5}$ concentrations and meteorological factors (temperature, humidity, wind speed).
+    \item \textbf{Seasonal Decomposition:} STL (Seasonal-Trend decomposition using LOESS) to separate trend, seasonal, and residual components in the time series.
+    \item \textbf{Anomaly Detection:} Statistical methods (Z-score, IQR) to identify pollution episodes and unusual patterns.
+\end{itemize}
+
+
+\subsection{Database Selection}
+
+\textbf{Design Principle: Simplicity Over Premature Optimization.}
+For the estimated data volume (approx. 50,000--70,000 records per year), a specialized distributed time-series database is not required.
+
+\textbf{Primary Database: PostgreSQL.}
+Selected as the single unified database for all data types (time series, metadata, user accounts). It is robust, supports spatial queries via PostGIS, and integrates natively with Django. Time-series performance is optimized through proper B-tree indexing and partitioning strategies.
+
+
+\subsection{Web Framework Selection: Django}
+
+Django is selected for its ``batteries-included'' approach, providing a built-in admin interface, ORM, and authentication out of the box. \textbf{Django REST Framework (DRF)} will be used to expose API endpoints.
+
+
+\subsection{Summary of Technology Stack}
+
+Table \ref{tab:tech_stack} summarizes the selected technologies, prioritizing implementability for a diploma project.
+
+\begin{table}[H]
+\centering
+\caption{AAQIS Technology Stack}
+\label{tab:tech_stack}
+\begin{tabular}{lll}
+\toprule
+\textbf{Component} & \textbf{Technology} & \textbf{Purpose} \\
+\midrule
+Language & Python 3.10+ & Core development \\
+Data Processing & pandas, numpy & ETL, Data manipulation \\
+ML & scikit-learn, Keras & SVR, LSTM models \\
+Database & PostgreSQL & Unified storage \\
+Web Framework & Django & Backend, Templates \\
+Frontend & Bootstrap, Plotly.js & UI, Visualizations \\
+Deployment & Docker Compose & Local containerization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{System Architecture Design}
+
+\subsection{High-Level Architecture Overview}
+
+The AAQIS system follows a simplified layered architecture pattern, prioritizing maintainability.
+
+\begin{verbatim}
++------------------------------------------------------------------+
+|                    PRESENTATION LAYER                            |
+|  [Django Templates + Bootstrap - Public Dashboard]               |
+|  [Plotly.js for Interactive Visualizations]                      |
++------------------------------------------------------------------+
+                              |
++------------------------------------------------------------------+
+|                    APPLICATION LAYER                             |
+|  [AAQIS-Forecast Module]  [AAQIS-Patterns Module]  [AQI Calc]    |
++------------------------------------------------------------------+
+                              |
++------------------------------------------------------------------+
+|                    DATA PROCESSING LAYER                         |
+|  [Python ETL Scripts]  [pandas/numpy]  [Data Validation]         |
++------------------------------------------------------------------+
+                              |
++------------------------------------------------------------------+
+|                    DATA STORAGE LAYER                            |
+|  [PostgreSQL - All Data: Time Series, Metadata, Users]           |
++------------------------------------------------------------------+
+                              |
++------------------------------------------------------------------+
+|                    DATA INGESTION LAYER                          |
+|  [Scheduled Tasks - Hourly Data Polling]                         |
+|  [OpenAQ API]  [AQICN API]  [OpenWeatherMap API]                 |
++------------------------------------------------------------------+
+\end{verbatim}
+
+
+\subsection{Layer Descriptions}
+
+\textbf{Data Ingestion Layer:} Responsible for collecting data via scheduled tasks (cron or Django management commands). It includes API clients for OpenAQ (historical and reference data), AQICN (real-time AQI and forecasts), and OpenWeatherMap (meteorological context).
+
+\textbf{Data Processing Layer:} Implements the ETL pipeline. It handles format standardization, timestamp normalization (UTC), unit conversion, and data quality checks (range limits, outlier detection).
+
+\textbf{Application Layer:} Contains the core analytical logic.
+\begin{itemize}
+    \item \textbf{AAQIS-Forecast:} Uses historical $\text{PM}_{2.5}$ data, lag features, and meteorological variables to predict pollutant concentrations for 24--48 hours using LSTM and SVR models.
+    \item \textbf{AAQIS-Patterns:} Performs correlation analysis between $\text{PM}_{2.5}$ and meteorological factors, seasonal decomposition to identify trends, and anomaly detection to flag pollution episodes.
+    \item \textbf{AQI Calculator:} Computes Air Quality Index based on U.S. EPA and WHO standards, with health recommendations.
+\end{itemize}
+
+\textbf{Presentation Layer:} Provides the user interface using \textbf{Django Templates} with Bootstrap for responsive design and Plotly.js for interactive visualizations.
+
+
+\subsection{Deployment Architecture}
+
+The system is designed for \textbf{Local Containerized Deployment} using Docker Compose. This ensures reproducibility for development and demonstration, and allows for easy migration to a cloud VPS if required in the future.
+
+\textbf{Docker Services:}
+\begin{itemize}
+    \item \texttt{web}: Django application (development server);
+    \item \texttt{postgres}: Database.
+\end{itemize}
+
+\textbf{Deployment Steps:}
+\begin{enumerate}
+    \item Clone the repository
+    \item Configure environment variables in \texttt{.env} file
+    \item Start services: \texttt{docker-compose up --build -d}
+    \item Apply database migrations
+    \item Access the application at \texttt{http://localhost:8000}
+\end{enumerate}
+
+
+\section{Data Processing Methodology}
+
+\subsection{Data Collection and Cleaning}
+
+Data is collected hourly. The cleaning process involves:
+\begin{enumerate}
+    \item \textbf{Format Standardization:} Parsing JSON/CSV/HTML into a unified schema.
+    \item \textbf{Timestamp Handling:} Alignment to hourly intervals in UTC.
+    \item \textbf{Missing Value Treatment:} Linear interpolation for gaps $<3$ hours; ML-based imputation for longer gaps.
+\end{enumerate}
+
+
+\subsection{Feature Engineering}
+
+\textbf{Temporal Features:} Hour of day, Day of week, Month, Season, Holiday flags --- capturing daily and seasonal pollution patterns characteristic of Astana's continental climate.
+
+\textbf{Lag Features:} $\text{PM}_{2.5}$ values at $t-1, t-2, ..., t-24$ hours --- leveraging autocorrelation in air quality time series for improved forecast accuracy.
+
+\textbf{Meteorological Features:} Temperature, Humidity, Wind Speed, Atmospheric Pressure --- key factors influencing pollutant dispersion and accumulation.
+
+\textbf{Derived Features:} Rolling averages (24h, 7d), rate of change, deviation from seasonal mean --- providing additional context for pattern recognition.
+
+
+\subsection{Model Training and Validation}
+
+Training uses the historical $\text{PM}_{2.5}$ dataset from OpenAQ (U.S. Embassy station, 2018--2023, approximately 16,000 hourly measurements). The data is split temporally: 70\% training (2018--2021), 15\% validation (2022), 15\% test (2023) to prevent data leakage and ensure temporal validity.
+
+\textbf{Evaluation Metrics:}
+\begin{itemize}
+    \item \textbf{RMSE} (Root Mean Square Error): Primary metric for forecast accuracy;
+    \item \textbf{MAE} (Mean Absolute Error): Robust to outliers;
+    \item \textbf{$R^2$} (Coefficient of Determination): Proportion of variance explained;
+    \item \textbf{MAPE} (Mean Absolute Percentage Error): Interpretable percentage error.
+\end{itemize}
+
+Time-series cross-validation with expanding window is employed to ensure model robustness across different time periods.
+
+
+\section{Chapter 2 Conclusions}
+
+The second chapter presented the system design and methodology. Main conclusions:
+\begin{enumerate}
+    \item A simplified Python-based stack (Django, PostgreSQL, Scikit-learn, Keras) was selected to prioritize implementability within the diploma project scope.
+    \item The system architecture focuses on two core modules: \textbf{AAQIS-Forecast} for $\text{PM}_{2.5}$ prediction using LSTM/SVR models, and \textbf{AAQIS-Patterns} for correlation and seasonal analysis.
+    \item Primary data source is the U.S. Embassy reference station (via OpenAQ API), providing 5+ years of validated hourly $\text{PM}_{2.5}$ measurements --- sufficient for training robust forecasting models.
+    \item Real-time data integration via AQICN API enables live dashboard updates and current AQI display.
+    \item A containerized deployment strategy using Docker Compose ensures reproducibility for development and thesis defense demonstration.
+\end{enumerate}
+
+The next chapter will present the practical implementation, including model training results, performance metrics, and the web dashboard interface.
+
+
+% ============================================================================
+% CHAPTER 3 (Placeholder)
+% ============================================================================
+\chapter{System Implementation and Experimental Results}
+
+\textit{This chapter will be completed after the practical implementation phase. It will include:}
+
+\begin{itemize}
+    \item Detailed description of the implemented system components
+    \item Exploratory Data Analysis (EDA) results
+    \item LSTM and SVR model training and hyperparameter tuning
+    \item Comparative analysis of model performance
+    \item Web dashboard screenshots and functionality description
+    \item Discussion of results and limitations
+\end{itemize}
+
+
+% ============================================================================
+% CONCLUSION (Placeholder)
+% ============================================================================
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+\textit{To be completed after implementation.}
+
+
+% ============================================================================
+% BIBLIOGRAPHY
+% ============================================================================
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+\end{document}

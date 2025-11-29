@@ -52,9 +52,15 @@ media/
 # Data (keep structure, ignore large files)
 data/raw/**/*.csv
 data/raw/**/*.json
+data/raw/**/*.nc
+data/raw/**/*.nc.zip
+data/raw/**/*.grib
 data/processed/**/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+
+# CAMS download log
+cams_download.log
 
 # ML Models
 src/infrastructure/ml_models/saved/*.h5
