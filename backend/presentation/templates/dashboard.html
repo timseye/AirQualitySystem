@@ -1,0 +1,459 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3">
+            <i class="bi bi-speedometer2"></i> Air Quality Dashboard
+            <small class="text-muted fs-6">Astana, Kazakhstan</small>
+        </h1>
+    </div>
+</div>
+
+<!-- Current AQI and Weather Row -->
+<div class="row mb-4">
+    <!-- Current AQI Card -->
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="aqi-card card h-100" id="aqi-card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Current Air Quality</h5>
+                <div class="loading-spinner" id="aqi-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="aqi-content" style="display: none;">
+                    <div class="aqi-value" id="aqi-value">--</div>
+                    <div class="fs-5 mb-2" id="aqi-category">Loading...</div>
+                    <div class="small" id="aqi-pm25">PM2.5: -- µg/m³</div>
+                    <hr>
+                    <div class="small text-muted" id="aqi-timestamp">
+                        <i class="bi bi-clock"></i> Updated: --
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weather Card -->
+    <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-cloud-sun"></i> Current Weather</h5>
+                <div class="loading-spinner" id="weather-loading">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+                <div id="weather-content" style="display: none;">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="weather-icon"><i class="bi bi-thermometer-half"></i></div>
+                            <div class="stat-value" id="weather-temp">--°C</div>
+                            <div class="stat-label">Temperature</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="weather-icon"><i class="bi bi-droplet"></i></div>
+                            <div class="stat-value" id="weather-humidity">--%</div>
+                            <div class="stat-label">Humidity</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="weather-icon"><i class="bi bi-wind"></i></div>
+                            <div class="stat-value" id="weather-wind">-- m/s</div>
+                            <div class="stat-label">Wind Speed</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="weather-icon"><i class="bi bi-speedometer"></i></div>
+                            <div class="stat-value" id="weather-pressure">-- hPa</div>
+                            <div class="stat-label">Pressure</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistics Card -->
+    <div class="col-lg-4 col-md-12 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-bar-chart"></i> Data Statistics</h5>
+                <div class="loading-spinner" id="stats-loading">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+                <div id="stats-content" style="display: none;">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="stat-value" id="stats-total">--</div>
+                            <div class="stat-label">Total Records</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="stat-value" id="stats-avg">--</div>
+                            <div class="stat-label">Avg PM2.5</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-value" id="stats-min">--</div>
+                            <div class="stat-label">Min PM2.5</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-value" id="stats-max">--</div>
+                            <div class="stat-label">Max PM2.5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Time Period Selector -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="btn-group" role="group" aria-label="Time period">
+            <button type="button" class="btn btn-outline-primary active" data-days="7">7 Days</button>
+            <button type="button" class="btn btn-outline-primary" data-days="30">30 Days</button>
+            <button type="button" class="btn btn-outline-primary" data-days="90">90 Days</button>
+            <button type="button" class="btn btn-outline-primary" data-days="365">1 Year</button>
+        </div>
+    </div>
+</div>
+
+<!-- PM2.5 Time Series Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-container">
+            <h5><i class="bi bi-graph-up"></i> PM2.5 Concentration Over Time</h5>
+            <div id="pm25-timeseries" style="height: 400px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Daily Averages Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-container">
+            <h5><i class="bi bi-calendar3"></i> Daily Average PM2.5</h5>
+            <div id="daily-averages" style="height: 350px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AQI Distribution -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="chart-container">
+            <h5><i class="bi bi-pie-chart"></i> AQI Category Distribution</h5>
+            <div id="aqi-distribution" style="height: 350px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="chart-container">
+            <h5><i class="bi bi-info-circle"></i> Health Recommendations</h5>
+            <div id="health-recommendations" class="p-3">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Current selected days
+    let selectedDays = 7;
+    
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCurrentData();
+        loadStatistics();
+        loadCharts(selectedDays);
+        
+        // Time period buttons
+        document.querySelectorAll('[data-days]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('[data-days]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedDays = parseInt(this.dataset.days);
+                loadCharts(selectedDays);
+            });
+        });
+        
+        // Auto-refresh every 5 minutes
+        setInterval(loadCurrentData, 300000);
+    });
+    
+    // Load current AQI and weather
+    async function loadCurrentData() {
+        const data = await fetchAPI('current/');
+        
+        if (data && !data.error) {
+            // AQI Card
+            document.getElementById('aqi-loading').style.display = 'none';
+            document.getElementById('aqi-content').style.display = 'block';
+            
+            const aqiValue = data.aqi || '--';
+            const category = data.category || 'unknown';
+            
+            document.getElementById('aqi-value').textContent = aqiValue;
+            document.getElementById('aqi-category').textContent = AQI_LABELS[category] || category;
+            document.getElementById('aqi-pm25').textContent = `PM2.5: ${data.pm25?.toFixed(1) || '--'} µg/m³`;
+            document.getElementById('aqi-timestamp').innerHTML = 
+                `<i class="bi bi-clock"></i> Updated: ${formatDate(data.timestamp)}`;
+            
+            // Update card color
+            const aqiCard = document.getElementById('aqi-card');
+            aqiCard.className = 'aqi-card card h-100 aqi-' + category.replace('_', '-');
+            
+            // Weather
+            document.getElementById('weather-loading').style.display = 'none';
+            document.getElementById('weather-content').style.display = 'block';
+            
+            const weather = data.weather || {};
+            document.getElementById('weather-temp').textContent = 
+                `${weather.temperature?.toFixed(1) || '--'}°C`;
+            document.getElementById('weather-humidity').textContent = 
+                `${weather.humidity?.toFixed(0) || '--'}%`;
+            document.getElementById('weather-wind').textContent = 
+                `${weather.wind_speed?.toFixed(1) || '--'} m/s`;
+            document.getElementById('weather-pressure').textContent = 
+                `${weather.pressure?.toFixed(0) || '--'} hPa`;
+            
+            // Health recommendations
+            updateHealthRecommendations(category, aqiValue);
+        }
+    }
+    
+    // Load statistics
+    async function loadStatistics() {
+        const data = await fetchAPI('statistics/');
+        
+        if (data && data.overall) {
+            document.getElementById('stats-loading').style.display = 'none';
+            document.getElementById('stats-content').style.display = 'block';
+            
+            const stats = data.overall;
+            document.getElementById('stats-total').textContent = 
+                (stats.total_records || 0).toLocaleString();
+            document.getElementById('stats-avg').textContent = 
+                (stats.avg_pm25?.toFixed(1) || '--') + ' µg/m³';
+            document.getElementById('stats-min').textContent = 
+                (stats.min_pm25?.toFixed(1) || '--') + ' µg/m³';
+            document.getElementById('stats-max').textContent = 
+                (stats.max_pm25?.toFixed(1) || '--') + ' µg/m³';
+            
+            // AQI Distribution pie chart
+            if (data.aqi_distribution) {
+                plotAQIDistribution(data.aqi_distribution);
+            }
+        }
+    }
+    
+    // Load charts
+    async function loadCharts(days) {
+        // PM2.5 time series
+        const tsData = await fetchAPI(`timeseries/?days=${days}&parameter=pm25`);
+        if (tsData && tsData.data) {
+            plotTimeSeries(tsData.data);
+        }
+        
+        // Daily averages
+        const dailyData = await fetchAPI(`daily/?days=${days}`);
+        if (dailyData && dailyData.data) {
+            plotDailyAverages(dailyData.data);
+        }
+    }
+    
+    // Plot PM2.5 time series
+    function plotTimeSeries(data) {
+        const timestamps = data.map(d => d.timestamp);
+        const values = data.map(d => d.value);
+        
+        // WHO guideline
+        const whoGuideline = Array(timestamps.length).fill(15);
+        
+        const traces = [
+            {
+                x: timestamps,
+                y: values,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'PM2.5',
+                line: { color: '#2196F3', width: 1.5 }
+            },
+            {
+                x: timestamps,
+                y: whoGuideline,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'WHO Guideline (15 µg/m³)',
+                line: { color: '#ff5722', width: 2, dash: 'dash' }
+            }
+        ];
+        
+        const layout = {
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'PM2.5 (µg/m³)' },
+            showlegend: true,
+            legend: { orientation: 'h', y: -0.15 },
+            margin: { t: 20, b: 60 },
+            hovermode: 'x unified'
+        };
+        
+        Plotly.newPlot('pm25-timeseries', traces, layout, { responsive: true });
+    }
+    
+    // Plot daily averages
+    function plotDailyAverages(data) {
+        const dates = data.map(d => d.date);
+        const avgPM25 = data.map(d => d.avg_pm25);
+        const minPM25 = data.map(d => d.min_pm25);
+        const maxPM25 = data.map(d => d.max_pm25);
+        
+        // Color based on AQI
+        const colors = avgPM25.map(v => {
+            if (v <= 12) return AQI_COLORS.good;
+            if (v <= 35.4) return AQI_COLORS.moderate;
+            if (v <= 55.4) return AQI_COLORS.unhealthy_sensitive;
+            if (v <= 150.4) return AQI_COLORS.unhealthy;
+            if (v <= 250.4) return AQI_COLORS.very_unhealthy;
+            return AQI_COLORS.hazardous;
+        });
+        
+        const traces = [
+            {
+                x: dates,
+                y: avgPM25,
+                type: 'bar',
+                name: 'Daily Average PM2.5',
+                marker: { color: colors }
+            }
+        ];
+        
+        const layout = {
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'PM2.5 (µg/m³)' },
+            margin: { t: 20, b: 60 },
+            shapes: [{
+                type: 'line',
+                x0: dates[0],
+                x1: dates[dates.length - 1],
+                y0: 15,
+                y1: 15,
+                line: { color: '#ff5722', width: 2, dash: 'dash' }
+            }]
+        };
+        
+        Plotly.newPlot('daily-averages', traces, layout, { responsive: true });
+    }
+    
+    // Plot AQI distribution
+    function plotAQIDistribution(data) {
+        const categoryColors = {
+            'Good': AQI_COLORS.good,
+            'Moderate': AQI_COLORS.moderate,
+            'Unhealthy for Sensitive': AQI_COLORS.unhealthy_sensitive,
+            'Unhealthy': AQI_COLORS.unhealthy,
+            'Very Unhealthy': AQI_COLORS.very_unhealthy,
+            'Hazardous': AQI_COLORS.hazardous
+        };
+        
+        const labels = data.map(d => d.category);
+        const values = data.map(d => d.count);
+        const colors = labels.map(l => categoryColors[l] || '#999');
+        
+        const trace = {
+            labels: labels,
+            values: values,
+            type: 'pie',
+            marker: { colors: colors },
+            textinfo: 'label+percent',
+            hole: 0.4
+        };
+        
+        const layout = {
+            margin: { t: 20, b: 20, l: 20, r: 20 },
+            showlegend: false
+        };
+        
+        Plotly.newPlot('aqi-distribution', [trace], layout, { responsive: true });
+    }
+    
+    // Update health recommendations
+    function updateHealthRecommendations(category, aqi) {
+        const recommendations = {
+            'good': {
+                icon: 'bi-emoji-smile text-success',
+                title: 'Air quality is satisfactory',
+                text: 'Air pollution poses little or no risk. Enjoy outdoor activities!',
+                advice: ['Perfect for outdoor exercise', 'Open windows for fresh air']
+            },
+            'moderate': {
+                icon: 'bi-emoji-neutral text-warning',
+                title: 'Air quality is acceptable',
+                text: 'Some pollutants may pose a moderate health concern for a very small number of people.',
+                advice: ['Unusually sensitive people should reduce prolonged outdoor exertion']
+            },
+            'unhealthy_sensitive': {
+                icon: 'bi-emoji-frown text-orange',
+                title: 'Unhealthy for Sensitive Groups',
+                text: 'Members of sensitive groups may experience health effects.',
+                advice: ['Children, elderly, and those with respiratory conditions should limit outdoor exertion',
+                         'Consider wearing a mask outdoors']
+            },
+            'unhealthy': {
+                icon: 'bi-emoji-angry text-danger',
+                title: 'Unhealthy',
+                text: 'Everyone may begin to experience health effects.',
+                advice: ['Everyone should reduce prolonged outdoor exertion',
+                         'Keep windows closed', 'Use air purifiers indoors']
+            },
+            'very_unhealthy': {
+                icon: 'bi-exclamation-triangle text-purple',
+                title: 'Very Unhealthy',
+                text: 'Health alert: everyone may experience more serious health effects.',
+                advice: ['Avoid all outdoor physical activities',
+                         'Keep windows and doors closed',
+                         'Run air purifiers on high']
+            },
+            'hazardous': {
+                icon: 'bi-x-octagon text-danger',
+                title: 'Hazardous',
+                text: 'Health warning of emergency conditions.',
+                advice: ['Everyone should avoid all outdoor activities',
+                         'Stay indoors with windows sealed',
+                         'Use N95 masks if going outside is necessary']
+            }
+        };
+        
+        const rec = recommendations[category] || recommendations['moderate'];
+        
+        let html = `
+            <div class="text-center mb-3">
+                <i class="bi ${rec.icon}" style="font-size: 3rem;"></i>
+            </div>
+            <h5 class="text-center">${rec.title}</h5>
+            <p class="text-muted">${rec.text}</p>
+            <h6>Recommendations:</h6>
+            <ul class="mb-0">
+                ${rec.advice.map(a => `<li>${a}</li>`).join('')}
+            </ul>
+        `;
+        
+        document.getElementById('health-recommendations').innerHTML = html;
+    }
+</script>
+{% endblock %}

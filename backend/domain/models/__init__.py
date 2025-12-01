@@ -9,6 +9,12 @@ from .air_quality import (
     Forecast,
 )
 
+from .data_models import (
+    Measurement,
+    Weather,
+    UnifiedData,
+)
+
 __all__ = [
     'City',
     'MonitoringStation',
@@ -16,4 +22,7 @@ __all__ = [
     'WeatherData',
     'AQICalculation',
     'Forecast',
+    'Measurement',
+    'Weather',
+    'UnifiedData',
 ]

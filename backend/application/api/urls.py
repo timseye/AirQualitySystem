@@ -1,18 +1,28 @@
 """API URL configuration."""
 
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-
-from . import views
-
-router = DefaultRouter()
-router.register(r'measurements', views.MeasurementViewSet, basename='measurement')
-router.register(r'forecasts', views.ForecastViewSet, basename='forecast')
+from django.urls import path
+from . import data_views
 
 app_name = 'api'
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('current/', views.current_aqi, name='current_aqi'),
-    path('health/', views.health_check, name='health_check'),
+    # API Overview
+    path('', data_views.api_overview, name='overview'),
+    
+    # Current data
+    path('current/', data_views.current_data, name='current'),
+    
+    # Time series
+    path('timeseries/', data_views.timeseries_data, name='timeseries'),
+    path('daily/', data_views.daily_averages, name='daily'),
+    
+    # Statistics
+    path('statistics/', data_views.statistics, name='statistics'),
+    
+    # Patterns
+    path('hourly-pattern/', data_views.hourly_pattern, name='hourly_pattern'),
+    path('monthly-pattern/', data_views.monthly_pattern, name='monthly_pattern'),
+    
+    # Correlation
+    path('correlation/', data_views.correlation_data, name='correlation'),
 ]

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3">
+            <i class="bi bi-info-circle"></i> About AAQIS
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>Air Quality Intelligence System for Astana</h4>
+                <p class="lead">
+                    AAQIS is a comprehensive system for monitoring, analyzing, and visualizing 
+                    air quality data in Astana, Kazakhstan.
+                </p>
+                
+                <h5 class="mt-4"><i class="bi bi-bullseye"></i> Project Goals</h5>
+                <ul>
+                    <li>Provide accurate short-term (24–48 hours) forecasts of PM2.5 concentrations</li>
+                    <li>Identify seasonal and diurnal pollution patterns</li>
+                    <li>Deliver clear visualizations through an accessible web interface</li>
+                </ul>
+                
+                <h5 class="mt-4"><i class="bi bi-database"></i> Data Sources</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Data Type</th>
+                            <th>Coverage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>OpenAQ</strong></td>
+                            <td>PM2.5 measurements (U.S. Embassy station)</td>
+                            <td>2016–2024</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Open-Meteo</strong></td>
+                            <td>Weather data (temperature, humidity, wind)</td>
+                            <td>2016–2024</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CAMS (Copernicus)</strong></td>
+                            <td>Atmospheric composition reanalysis</td>
+                            <td>2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h5 class="mt-4"><i class="bi bi-gear"></i> Technology Stack</h5>
+                <div class="row text-center">
+                    <div class="col-4 col-md-2 mb-3">
+                        <div class="bg-light rounded p-2">
+                            <i class="bi bi-filetype-py text-primary" style="font-size: 2rem;"></i>
+                            <div class="small">Python</div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 mb-3">
+                        <div class="bg-light rounded p-2">
+                            <i class="bi bi-box text-success" style="font-size: 2rem;"></i>
+                            <div class="small">Django</div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 mb-3">
+                        <div class="bg-light rounded p-2">
+                            <i class="bi bi-server text-info" style="font-size: 2rem;"></i>
+                            <div class="small">PostgreSQL</div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 mb-3">
+                        <div class="bg-light rounded p-2">
+                            <i class="bi bi-graph-up text-warning" style="font-size: 2rem;"></i>
+                            <div class="small">Plotly.js</div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 mb-3">
+                        <div class="bg-light rounded p-2">
+                            <i class="bi bi-bootstrap text-purple" style="font-size: 2rem;"></i>
+                            <div class="small">Bootstrap</div>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 mb-3">
+                        <div class="bg-light rounded p-2">
+                            <i class="bi bi-box-seam text-secondary" style="font-size: 2rem;"></i>
+                            <div class="small">Docker</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4"><i class="bi bi-book"></i> Academic Context</h5>
+                <p>
+                    This system was developed as part of a diploma thesis at 
+                    <strong>Astana IT University</strong>, Department of Computer Science.
+                </p>
+                <p class="text-muted">
+                    <strong>Thesis Title:</strong> "Development of a System for Analyzing and 
+                    Visualizing Air Quality in Astana Using Data Analysis Techniques"
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- AQI Scale Reference -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-palette"></i> AQI Scale (US EPA)</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr class="aqi-good">
+                            <td><strong>0-50</strong></td>
+                            <td>Good</td>
+                        </tr>
+                        <tr class="aqi-moderate">
+                            <td><strong>51-100</strong></td>
+                            <td>Moderate</td>
+                        </tr>
+                        <tr class="aqi-unhealthy-sensitive">
+                            <td><strong>101-150</strong></td>
+                            <td>Unhealthy for Sensitive Groups</td>
+                        </tr>
+                        <tr class="aqi-unhealthy">
+                            <td><strong>151-200</strong></td>
+                            <td>Unhealthy</td>
+                        </tr>
+                        <tr class="aqi-very-unhealthy">
+                            <td><strong>201-300</strong></td>
+                            <td>Very Unhealthy</td>
+                        </tr>
+                        <tr class="aqi-hazardous">
+                            <td><strong>301+</strong></td>
+                            <td>Hazardous</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- WHO Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-check"></i> WHO Guidelines (2021)</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr>
+                            <td>PM2.5 (annual)</td>
+                            <td class="text-end"><strong>5 µg/m³</strong></td>
+                        </tr>
+                        <tr>
+                            <td>PM2.5 (24-hour)</td>
+                            <td class="text-end"><strong>15 µg/m³</strong></td>
+                        </tr>
+                        <tr>
+                            <td>PM10 (annual)</td>
+                            <td class="text-end"><strong>15 µg/m³</strong></td>
+                        </tr>
+                        <tr>
+                            <td>PM10 (24-hour)</td>
+                            <td class="text-end"><strong>45 µg/m³</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Links -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Resources</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="https://openaq.org" target="_blank" class="list-group-item list-group-item-action">
+                    <i class="bi bi-box-arrow-up-right"></i> OpenAQ
+                </a>
+                <a href="https://open-meteo.com" target="_blank" class="list-group-item list-group-item-action">
+                    <i class="bi bi-box-arrow-up-right"></i> Open-Meteo
+                </a>
+                <a href="https://atmosphere.copernicus.eu" target="_blank" class="list-group-item list-group-item-action">
+                    <i class="bi bi-box-arrow-up-right"></i> Copernicus CAMS
+                </a>
+                <a href="https://www.who.int/news-room/feature-stories/detail/what-are-the-who-air-quality-guidelines" 
+                   target="_blank" class="list-group-item list-group-item-action">
+                    <i class="bi bi-box-arrow-up-right"></i> WHO Air Quality Guidelines
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

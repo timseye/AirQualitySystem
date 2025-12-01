@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Patterns Analysis{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3">
+            <i class="bi bi-graph-up"></i> Pattern Analysis
+            <small class="text-muted fs-6">Seasonal and Diurnal Patterns</small>
+        </h1>
+    </div>
+</div>
+
+<!-- Hourly Pattern -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-container">
+            <h5><i class="bi bi-clock"></i> Diurnal Pattern (Average by Hour of Day)</h5>
+            <p class="text-muted small">Shows how PM2.5 concentrations vary throughout the day</p>
+            <div id="hourly-pattern" style="height: 350px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Pattern -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-container">
+            <h5><i class="bi bi-calendar-month"></i> Seasonal Pattern (Average by Month)</h5>
+            <p class="text-muted small">Shows how PM2.5 varies across seasons</p>
+            <div id="monthly-pattern" style="height: 350px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Correlation Analysis -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="chart-container h-100">
+            <h5><i class="bi bi-thermometer-half"></i> PM2.5 vs Temperature</h5>
+            <p class="text-muted small">Scatter plot showing relationship between PM2.5 and temperature</p>
+            <div id="pm25-vs-temp" style="height: 350px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="chart-container h-100">
+            <h5><i class="bi bi-wind"></i> PM2.5 vs Wind Speed</h5>
+            <p class="text-muted small">Scatter plot showing relationship between PM2.5 and wind speed</p>
+            <div id="pm25-vs-wind" style="height: 350px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Temperature and PM2.5 Dual Axis -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-container">
+            <h5><i class="bi bi-layers"></i> PM2.5 and Temperature Over Time</h5>
+            <p class="text-muted small">Dual axis plot showing the relationship between pollution and temperature</p>
+            <div id="dual-axis-chart" style="height: 400px;">
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Findings -->
+<div class="row">
+    <div class="col-12">
+        <div class="chart-container">
+            <h5><i class="bi bi-lightbulb"></i> Key Pattern Findings</h5>
+            <div id="findings" class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="bi bi-sunrise text-warning" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Diurnal Pattern</h6>
+                        <p class="small text-muted mb-0" id="finding-diurnal">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="bi bi-snow text-info" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Seasonal Pattern</h6>
+                        <p class="small text-muted mb-0" id="finding-seasonal">Loading...</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="bi bi-arrows-angle-contract text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2">Weather Correlation</h6>
+                        <p class="small text-muted mb-0" id="finding-correlation">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadHourlyPattern();
+        loadMonthlyPattern();
+        loadCorrelationData();
+    });
+    
+    // Load hourly pattern
+    async function loadHourlyPattern() {
+        const data = await fetchAPI('hourly-pattern/');
+        
+        if (data && data.data) {
+            const hours = data.data.map(d => d.hour);
+            const pm25 = data.data.map(d => d.avg_pm25);
+            const temp = data.data.map(d => d.avg_temp);
+            
+            const traces = [
+                {
+                    x: hours,
+                    y: pm25,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'PM2.5 (µg/m³)',
+                    line: { color: '#2196F3', width: 3 },
+                    yaxis: 'y'
+                },
+                {
+                    x: hours,
+                    y: temp,
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Temperature (°C)',
+                    line: { color: '#ff9800', width: 2, dash: 'dot' },
+                    yaxis: 'y2'
+                }
+            ];
+            
+            const layout = {
+                xaxis: { 
+                    title: 'Hour of Day',
+                    tickmode: 'array',
+                    tickvals: [0, 3, 6, 9, 12, 15, 18, 21],
+                    ticktext: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00']
+                },
+                yaxis: { title: 'PM2.5 (µg/m³)', side: 'left' },
+                yaxis2: { title: 'Temperature (°C)', side: 'right', overlaying: 'y' },
+                showlegend: true,
+                legend: { orientation: 'h', y: -0.2 },
+                margin: { t: 20, b: 80 }
+            };
+            
+            Plotly.newPlot('hourly-pattern', traces, layout, { responsive: true });
+            
+            // Find peak hours
+            const maxPM25 = Math.max(...pm25);
+            const peakHour = hours[pm25.indexOf(maxPM25)];
+            document.getElementById('finding-diurnal').textContent = 
+                `Peak pollution at ${peakHour}:00 (${maxPM25.toFixed(1)} µg/m³). Higher levels in morning and evening rush hours.`;
+        }
+    }
+    
+    // Load monthly pattern
+    async function loadMonthlyPattern() {
+        const data = await fetchAPI('monthly-pattern/');
+        
+        if (data && data.data) {
+            const months = data.data.map(d => d.month_name);
+            const pm25 = data.data.map(d => d.avg_pm25);
+            
+            // Color by season
+            const colors = data.data.map(d => {
+                const m = d.month;
+                if (m >= 11 || m <= 2) return '#1565c0'; // Winter - blue
+                if (m >= 3 && m <= 5) return '#4caf50';  // Spring - green
+                if (m >= 6 && m <= 8) return '#ff9800';  // Summer - orange
+                return '#795548'; // Fall - brown
+            });
+            
+            const trace = {
+                x: months,
+                y: pm25,
+                type: 'bar',
+                marker: { color: colors },
+                text: pm25.map(v => v?.toFixed(1)),
+                textposition: 'outside'
+            };
+            
+            const layout = {
+                xaxis: { title: 'Month' },
+                yaxis: { title: 'Average PM2.5 (µg/m³)' },
+                margin: { t: 40, b: 60 },
+                shapes: [{
+                    type: 'line',
+                    x0: -0.5,
+                    x1: 11.5,
+                    y0: 15,
+                    y1: 15,
+                    line: { color: '#ff5722', width: 2, dash: 'dash' }
+                }],
+                annotations: [{
+                    x: 11,
+                    y: 15,
+                    text: 'WHO Guideline',
+                    showarrow: false,
+                    yshift: 10
+                }]
+            };
+            
+            Plotly.newPlot('monthly-pattern', [trace], layout, { responsive: true });
+            
+            // Find seasonal pattern
+            const winterMonths = data.data.filter(d => d.month >= 11 || d.month <= 2);
+            const summerMonths = data.data.filter(d => d.month >= 6 && d.month <= 8);
+            
+            const winterAvg = winterMonths.reduce((sum, d) => sum + (d.avg_pm25 || 0), 0) / winterMonths.length;
+            const summerAvg = summerMonths.reduce((sum, d) => sum + (d.avg_pm25 || 0), 0) / summerMonths.length;
+            
+            document.getElementById('finding-seasonal').textContent = 
+                `Winter avg: ${winterAvg.toFixed(1)} µg/m³, Summer avg: ${summerAvg.toFixed(1)} µg/m³. ${(winterAvg / summerAvg).toFixed(1)}x higher in heating season.`;
+        }
+    }
+    
+    // Load correlation data
+    async function loadCorrelationData() {
+        const data = await fetchAPI('correlation/?limit=2000');
+        
+        if (data && data.data && data.data.length > 0) {
+            const pm25 = data.data.map(d => d.pm25);
+            const temp = data.data.map(d => d.temperature);
+            const wind = data.data.map(d => d.wind_speed);
+            
+            // PM2.5 vs Temperature
+            const tempTrace = {
+                x: temp,
+                y: pm25,
+                mode: 'markers',
+                type: 'scatter',
+                marker: { 
+                    color: pm25,
+                    colorscale: 'YlOrRd',
+                    size: 5,
+                    opacity: 0.5
+                },
+                name: 'PM2.5'
+            };
+            
+            Plotly.newPlot('pm25-vs-temp', [tempTrace], {
+                xaxis: { title: 'Temperature (°C)' },
+                yaxis: { title: 'PM2.5 (µg/m³)' },
+                margin: { t: 20, b: 50 }
+            }, { responsive: true });
+            
+            // PM2.5 vs Wind Speed
+            const windTrace = {
+                x: wind,
+                y: pm25,
+                mode: 'markers',
+                type: 'scatter',
+                marker: { 
+                    color: pm25,
+                    colorscale: 'YlOrRd',
+                    size: 5,
+                    opacity: 0.5
+                },
+                name: 'PM2.5'
+            };
+            
+            Plotly.newPlot('pm25-vs-wind', [windTrace], {
+                xaxis: { title: 'Wind Speed (m/s)' },
+                yaxis: { title: 'PM2.5 (µg/m³)' },
+                margin: { t: 20, b: 50 }
+            }, { responsive: true });
+            
+            // Calculate correlations
+            const tempCorr = calculateCorrelation(temp.filter(t => t != null), 
+                                                   pm25.filter((_, i) => temp[i] != null));
+            const windCorr = calculateCorrelation(wind.filter(w => w != null), 
+                                                   pm25.filter((_, i) => wind[i] != null));
+            
+            document.getElementById('finding-correlation').textContent = 
+                `Temperature correlation: ${tempCorr.toFixed(2)} (negative = higher PM2.5 in cold). Wind correlation: ${windCorr.toFixed(2)} (negative = wind disperses pollution).`;
+            
+            // Dual axis chart
+            loadDualAxisChart();
+        }
+    }
+    
+    // Load dual axis chart (PM2.5 and Temperature over time)
+    async function loadDualAxisChart() {
+        const pm25Data = await fetchAPI('timeseries/?days=30&parameter=pm25');
+        const tempData = await fetchAPI('timeseries/?days=30&parameter=temperature');
+        
+        if (pm25Data && tempData) {
+            const traces = [
+                {
+                    x: pm25Data.data.map(d => d.timestamp),
+                    y: pm25Data.data.map(d => d.value),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'PM2.5 (µg/m³)',
+                    line: { color: '#2196F3' },
+                    yaxis: 'y'
+                },
+                {
+                    x: tempData.data.map(d => d.timestamp),
+                    y: tempData.data.map(d => d.value),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Temperature (°C)',
+                    line: { color: '#ff9800' },
+                    yaxis: 'y2'
+                }
+            ];
+            
+            const layout = {
+                xaxis: { title: 'Date' },
+                yaxis: { title: 'PM2.5 (µg/m³)', side: 'left', color: '#2196F3' },
+                yaxis2: { title: 'Temperature (°C)', side: 'right', overlaying: 'y', color: '#ff9800' },
+                showlegend: true,
+                legend: { orientation: 'h', y: -0.15 },
+                margin: { t: 20, b: 60 },
+                hovermode: 'x unified'
+            };
+            
+            Plotly.newPlot('dual-axis-chart', traces, layout, { responsive: true });
+        }
+    }
+    
+    // Calculate Pearson correlation
+    function calculateCorrelation(x, y) {
+        const n = Math.min(x.length, y.length);
+        if (n < 2) return 0;
+        
+        const meanX = x.slice(0, n).reduce((a, b) => a + b, 0) / n;
+        const meanY = y.slice(0, n).reduce((a, b) => a + b, 0) / n;
+        
+        let numerator = 0, denomX = 0, denomY = 0;
+        for (let i = 0; i < n; i++) {
+            const dx = x[i] - meanX;
+            const dy = y[i] - meanY;
+            numerator += dx * dy;
+            denomX += dx * dx;
+            denomY += dy * dy;
+        }
+        
+        const denom = Math.sqrt(denomX * denomY);
+        return denom === 0 ? 0 : numerator / denom;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AAQIS{% endblock %} - Air Quality Intelligence System</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    
+    <style>
+        :root {
+            --aqi-good: #00e400;
+            --aqi-moderate: #ffff00;
+            --aqi-unhealthy-sensitive: #ff7e00;
+            --aqi-unhealthy: #ff0000;
+            --aqi-very-unhealthy: #8f3f97;
+            --aqi-hazardous: #7e0023;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .aqi-card {
+            border-radius: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .aqi-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .aqi-value {
+            font-size: 4rem;
+            font-weight: 700;
+        }
+        
+        .aqi-good { background: linear-gradient(135deg, #00e400, #00c853); color: #000; }
+        .aqi-moderate { background: linear-gradient(135deg, #ffff00, #ffd600); color: #000; }
+        .aqi-unhealthy-sensitive { background: linear-gradient(135deg, #ff7e00, #ff6d00); color: #fff; }
+        .aqi-unhealthy { background: linear-gradient(135deg, #ff0000, #d50000); color: #fff; }
+        .aqi-very-unhealthy { background: linear-gradient(135deg, #8f3f97, #6a1b9a); color: #fff; }
+        .aqi-hazardous { background: linear-gradient(135deg, #7e0023, #4a0014); color: #fff; }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2196F3;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .weather-icon {
+            font-size: 1.5rem;
+        }
+        
+        footer {
+            background: #343a40;
+            color: #fff;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'presentation:dashboard' %}">
+                <i class="bi bi-cloud-haze2"></i> AAQIS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                           href="{% url 'presentation:dashboard' %}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'patterns' %}active{% endif %}" 
+                           href="{% url 'presentation:patterns' %}">
+                            <i class="bi bi-graph-up"></i> Patterns
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" 
+                           href="{% url 'presentation:about' %}">
+                            <i class="bi bi-info-circle"></i> About
+                        </a>
+                    </li>
+                </ul>
+                <span class="navbar-text">
+                    <i class="bi bi-geo-alt"></i> Astana, Kazakhstan
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-1">
+                <strong>AAQIS</strong> - Air Quality Intelligence System for Astana
+            </p>
+            <p class="mb-1 small">
+                Data sources: OpenAQ, Open-Meteo, CAMS | 
+                Astana IT University Diploma Project 2025
+            </p>
+            <p class="mb-0 small text-muted">
+                <i class="bi bi-github"></i> 
+                <a href="https://github.com/timseye/AirQualitySystem" class="text-light">GitHub Repository</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Common JS utilities -->
+    <script>
+        // AQI category colors
+        const AQI_COLORS = {
+            'good': '#00e400',
+            'moderate': '#ffff00', 
+            'unhealthy_sensitive': '#ff7e00',
+            'unhealthy': '#ff0000',
+            'very_unhealthy': '#8f3f97',
+            'hazardous': '#7e0023'
+        };
+        
+        const AQI_LABELS = {
+            'good': 'Good',
+            'moderate': 'Moderate',
+            'unhealthy_sensitive': 'Unhealthy for Sensitive Groups',
+            'unhealthy': 'Unhealthy',
+            'very_unhealthy': 'Very Unhealthy',
+            'hazardous': 'Hazardous'
+        };
+        
+        // Format date for display
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+        
+        // Fetch data from API
+        async function fetchAPI(endpoint) {
+            try {
+                const response = await fetch(`/api/${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`API Error (${endpoint}):`, error);
+                return null;
+            }
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
