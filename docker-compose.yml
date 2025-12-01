@@ -1,5 +1,10 @@
-# AAQIS Docker Compose Configuration
+# ===========================================
+# AAQIS - Docker Compose Configuration
 # Air Quality Intelligence System for Astana
+# ===========================================
+# Usage: docker-compose up -d
+# Dashboard: http://localhost:8000
+# ===========================================
 
 services:
   # PostgreSQL Database
@@ -8,15 +13,16 @@ services:
     container_name: aaqis_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-aaqis_db}
-      POSTGRES_USER: ${POSTGRES_USER:-aaqis_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aaqis_password}
+      POSTGRES_DB: aaqis_db
+      POSTGRES_USER: aaqis_user
+      POSTGRES_PASSWORD: aaqis_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aaqis_user} -d ${POSTGRES_DB:-aaqis_db}"]
+      test: ["CMD-SHELL", "pg_isready -U aaqis_user -d aaqis_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,19 +32,22 @@ services:
     build: .
     container_name: aaqis_web
     restart: unless-stopped
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=True
-      - POSTGRES_DB=aaqis_db
-      - POSTGRES_USER=aaqis_user
-      - POSTGRES_PASSWORD=aaqis_password
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
+      - DJANGO_DEBUG=True
+      - DJANGO_SECRET_KEY=your-secret-key-change-in-production
+      - DB_NAME=aaqis_db
+      - DB_USER=aaqis_user
+      - DB_PASSWORD=aaqis_password
+      - DB_HOST=db
+      - DB_PORT=5432
     depends_on:
       db:
         condition: service_healthy

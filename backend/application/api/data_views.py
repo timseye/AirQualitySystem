@@ -116,13 +116,19 @@ def timeseries_data(request):
     db_column = param_map.get(parameter, 'pm25')
     
     with connection.cursor() as cursor:
+        # Use last available data date instead of NOW() 
+        # (data ends March 2025, current date is December 2025)
         cursor.execute(f"""
             SELECT 
                 timestamp_utc,
                 {db_column} as value
             FROM unified_data
             WHERE {db_column} IS NOT NULL
-              AND timestamp_utc >= NOW() - INTERVAL '{days} days'
+              AND timestamp_utc >= (
+                  SELECT MAX(timestamp_utc) - INTERVAL '{days} days' 
+                  FROM unified_data 
+                  WHERE {db_column} IS NOT NULL
+              )
             ORDER BY timestamp_utc ASC
         """)
         rows = cursor.fetchall()
@@ -144,6 +150,7 @@ def daily_averages(request):
     days = min(days, 365)
     
     with connection.cursor() as cursor:
+        # Use last available data date instead of NOW()
         cursor.execute(f"""
             SELECT 
                 DATE(timestamp_utc) as date,
@@ -153,7 +160,11 @@ def daily_averages(request):
                 AVG(temperature_c) as avg_temp
             FROM unified_data
             WHERE pm25 IS NOT NULL
-              AND timestamp_utc >= NOW() - INTERVAL '{days} days'
+              AND timestamp_utc >= (
+                  SELECT MAX(timestamp_utc) - INTERVAL '{days} days' 
+                  FROM unified_data 
+                  WHERE pm25 IS NOT NULL
+              )
             GROUP BY DATE(timestamp_utc)
             ORDER BY date ASC
         """)

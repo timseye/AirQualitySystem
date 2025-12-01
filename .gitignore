@@ -1,3 +1,8 @@
+# ===========================================
+# AAQIS - Air Quality Intelligence System
+# .gitignore
+# ===========================================
+
 # Python
 __pycache__/
 *.py[cod]
@@ -32,11 +37,13 @@ env/
 *.swp
 *.swo
 .DS_Store
+*.sublime-*
 
-# Environment
+# Environment variables
 .env
 .env.local
 .env.*.local
+*.env
 
 # Django
 *.log
@@ -48,8 +55,9 @@ media/
 
 # Jupyter
 .ipynb_checkpoints/
+*.ipynb_checkpoints
 
-# Data (keep structure, ignore large files)
+# Data files (keep structure, ignore large files)
 data/raw/**/*.csv
 data/raw/**/*.json
 data/raw/**/*.nc
@@ -61,22 +69,51 @@ data/processed/**/*
 
 # CAMS download log
 cams_download.log
+*.log
 
-# ML Models
-src/infrastructure/ml_models/saved/*.h5
-src/infrastructure/ml_models/saved/*.pkl
-src/infrastructure/ml_models/saved/*.joblib
+# ML Models (trained models are large)
+backend/infrastructure/ml_models/saved/*.h5
+backend/infrastructure/ml_models/saved/*.pkl
+backend/infrastructure/ml_models/saved/*.joblib
+backend/infrastructure/ml_models/saved/*.keras
+!backend/infrastructure/ml_models/saved/.gitkeep
 
-# Context folder (internal use)
+# Archive (old scripts, keep for reference)
+# archive/
+
+# Context folder (internal university docs)
 context/
 
 # Coverage
 htmlcov/
 .coverage
 .coverage.*
+coverage.xml
+*.cover
 
 # mypy
 .mypy_cache/
+.dmypy.json
+dmypy.json
 
 # pytest
 .pytest_cache/
+pytest_cache/
+
+# Docker
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
+
+# OS files
+Thumbs.db
+ehthumbs.db
+
+# Secrets (never commit!)
+*.pem
+*.key
+secrets/
