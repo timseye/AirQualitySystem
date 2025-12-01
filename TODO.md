@@ -1,245 +1,229 @@
-# 📋 AAQIS - Air Quality Intelligence System
-## План разработки дипломной работы
+# 📋 AAQIS - Project Status & Roadmap
+## Air Quality Intelligence System for Astana
+
+**Last Updated:** December 2, 2025
 
 ---
 
-## 📊 Текущий статус
+## ✅ Completed Tasks
 
-| Компонент | Статус | Примечание |
-|-----------|--------|------------|
-| Глава 1 (Теория) | ✅ Готово | chapter1_latex.tex |
-| Глава 2 (Анализ) | ✅ Готово | chapter2_english_gemini_review.tex |
-| Глава 3 (Практика) | 🔴 Не начато | Нужен код |
-| AQICN API | ✅ Подключен | Токен работает |
-| Kaggle датасет | ⚠️ Sample only | Нет данных по Астане! |
-| ML модели | 🔴 Не начато | LSTM, SVR, RF |
-| Дэшборд | 🔴 Не начато | Django + Plotly |
+### Phase 1: Data Collection ✅
+- [x] OpenAQ API integration (U.S. Embassy PM2.5 data)
+- [x] Open-Meteo weather data (2018-2025)
+- [x] CAMS reanalysis data (Copernicus)
+- [x] Historical data download scripts
+- [x] Data validation and quality checks
+
+### Phase 2: Database & ETL ✅
+- [x] PostgreSQL 15 setup (Docker)
+- [x] Database schema design
+- [x] ETL pipeline implementation
+- [x] Data normalization (unified_data table)
+- [x] Feature engineering (hour, month, season, is_heating_season)
+- [x] Complete documentation (`docs/data_collection_log.md`)
+
+**Database Statistics:**
+| Table | Records |
+|-------|---------|
+| measurements | 65,658 |
+| weather | 69,192 |
+| unified_data | 69,192 |
+
+### Phase 3: Backend Development ✅
+- [x] Django 5.2 project setup
+- [x] Clean Architecture structure (domain, application, infrastructure, presentation)
+- [x] Django REST Framework API
+- [x] API endpoints:
+  - `/api/current/` - Current AQI
+  - `/api/timeseries/` - Time series data
+  - `/api/statistics/` - Summary stats
+  - `/api/daily/` - Daily averages
+  - `/api/hourly-pattern/` - Hourly patterns
+  - `/api/monthly-pattern/` - Monthly patterns
+  - `/api/correlation/` - Correlation data
+
+### Phase 4: Frontend Dashboard ✅
+- [x] Bootstrap 5 responsive layout
+- [x] Plotly.js interactive charts
+- [x] Dashboard page (`/`)
+  - AQI card with color coding
+  - Weather conditions
+  - PM2.5 time series chart
+  - Daily averages chart
+  - AQI distribution
+  - Health recommendations
+- [x] Patterns page (`/patterns/`)
+  - Diurnal pattern (by hour)
+  - Seasonal pattern (by month)
+  - PM2.5 vs Temperature scatter
+  - PM2.5 vs Wind Speed scatter
+  - Dual-axis time series
+- [x] About page (`/about/`)
+  - Project description
+  - Data sources table
+  - Technology stack
+  - AQI scale reference
+  - WHO guidelines
+
+### Phase 5: Infrastructure ✅
+- [x] Docker configuration (Dockerfile)
+- [x] docker-compose.yml setup
+- [x] Virtual environment (.venv)
+- [x] pyproject.toml dependencies
 
 ---
 
-## 🎯 ЭТАП 1: Сбор данных (Неделя 1-2)
+## 🔄 In Progress
 
-### 1.1 AQICN API (Real-time)
-- [x] Получить API токен
-- [x] Протестировать endpoint для Астаны
-- [ ] Создать скрипт для периодического сбора данных
-- [ ] Сохранять в CSV/PostgreSQL
-
-**Доступные данные:** AQI, CO, NO₂, SO₂, температура, влажность, давление, ветер  
-**Прогноз:** PM2.5, PM10 на 9 дней
-
-### 1.2 OpenAQ API (Historical)
-- [ ] Зарегистрироваться на https://openaq.org/
-- [ ] Изучить API документацию
-- [ ] Скачать исторические данные по Астане (2019-2025)
-- [ ] Проверить покрытие и качество данных
-
-### 1.3 OpenWeatherMap API (Weather)
-- [ ] Получить API ключ (бесплатный)
-- [ ] Скачать исторические погодные данные
-- [ ] Синхронизировать с air quality данными
-
-### 1.4 Kaggle датасеты
-- [x] central_asia_aqwx (sample - 72h, нет Астаны!)
-- [ ] Найти полный датасет или альтернативу
-- [ ] Искать другие релевантные датасеты
-
-### 1.5 Kazhydromet (если получится)
-- [ ] Проверить AirKZ приложение на наличие API
-- [ ] Написать парсер для сайта (если данные открыты)
-- [ ] Договориться о получении данных (официально)
+### Documentation
+- [x] README.md - Complete project documentation
+- [x] TODO.md - Task tracking (this file)
+- [x] data_collection_log.md - ETL pipeline docs
+- [ ] API documentation (OpenAPI/Swagger)
 
 ---
 
-## 🛠️ ЭТАП 2: Инфраструктура (Неделя 2-3)
+## ⏳ Remaining Tasks
 
-### 2.1 Структура проекта
+### Phase 6: ML Models
+- [ ] EDA Jupyter notebook
+- [ ] Feature selection analysis
+- [ ] LSTM model for PM2.5 forecasting
+- [ ] SVR model comparison
+- [ ] Random Forest for feature importance
+- [ ] Model evaluation (RMSE, MAE, R²)
+- [ ] Model persistence (`infrastructure/ml_models/saved/`)
+- [ ] Forecast API endpoint (`/api/forecast/`)
+
+### Phase 7: Real-time Updates (Optional)
+- [ ] Celery task queue setup
+- [ ] Redis message broker
+- [ ] Scheduled data collection tasks
+- [ ] Real-time dashboard updates
+
+### Phase 8: Deployment
+- [ ] Full Docker Compose stack
+- [ ] Production settings
+- [ ] Nginx reverse proxy
+- [ ] SSL/HTTPS setup
+- [ ] GitHub Actions CI/CD
+
+### Phase 9: Thesis Documentation
+- [ ] Chapter 3 - Implementation details
+- [ ] System screenshots
+- [ ] Code listings
+- [ ] Experimental results
+- [ ] Conclusion
+- [ ] Presentation (12-17 slides)
+
+---
+
+## 📊 Project Metrics
+
+### Data Coverage
+- **Period:** January 2018 - November 2025
+- **Resolution:** Hourly
+- **Total Records:** 69,192
+- **Completeness:** 54.1% excellent (≥90%), 45.9% fair (50-70%)
+
+### Code Statistics
+```
+backend/
+├── core/          - Django settings, URLs
+├── domain/        - Data models
+├── application/   - API views, business logic
+├── infrastructure/- DB, ML models
+└── presentation/  - Templates, views
+```
+
+### API Performance
+- `/api/current/` - ~50ms
+- `/api/timeseries/` - ~100-500ms (depends on range)
+- `/api/statistics/` - ~200ms
+
+---
+
+## 🛠️ Technical Stack
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| Language | Python | 3.12 |
+| Backend | Django | 5.2.8 |
+| API | Django REST Framework | 3.x |
+| Database | PostgreSQL | 15 |
+| Frontend | Bootstrap | 5.3 |
+| Charts | Plotly.js | latest |
+| Container | Docker | 24.x |
+| ML (planned) | TensorFlow/Keras | 2.x |
+
+---
+
+## 📁 Project Structure
+
 ```
 AirQualitySystem/
-├── data/                    # Датасеты
-│   ├── central_asia_aqwx/   # Kaggle
-│   ├── aqicn/               # Real-time данные
-│   ├── openaq/              # Historical данные
-│   └── processed/           # Обработанные данные
-├── src/                     # Исходный код
-│   ├── etl/                 # Extract-Transform-Load
-│   ├── models/              # ML модели
-│   ├── api/                 # API клиенты
-│   └── utils/               # Утилиты
-├── notebooks/               # Jupyter notebooks для EDA
-├── webapp/                  # Django приложение
-│   ├── dashboard/           # Визуализация
-│   ├── forecast/            # API прогнозов
-│   └── templates/           # HTML шаблоны
-├── tests/                   # Тесты
-├── docker/                  # Docker конфигурация
-├── context/                 # Университетские документы
-└── docs/                    # Документация
+├── backend/                    # Django app (renamed from src/)
+│   ├── core/                   # settings.py, urls.py, wsgi.py
+│   ├── domain/                 # models/air_quality.py
+│   ├── application/            # api/views.py, data_views.py
+│   ├── infrastructure/         # database/, ml_models/
+│   └── presentation/           # templates/, views.py
+├── archive/
+│   └── etl_scripts/            # Data collection scripts (archived)
+├── data/
+│   ├── raw/                    # Original CSV files
+│   └── processed/              # Cleaned data
+├── docs/
+│   ├── data_collection_log.md  # Complete ETL documentation
+│   └── thesis/                 # LaTeX files
+├── tests/                      # Test files
+├── docker-compose.yml
+├── Dockerfile
+├── manage.py
+├── pyproject.toml
+├── README.md
+└── TODO.md
 ```
 
-### 2.2 База данных
-- [ ] Установить PostgreSQL
-- [ ] Создать схему для time-series данных
-- [ ] Настроить индексы для быстрых запросов
+---
 
-### 2.3 Docker
-- [ ] Создать Dockerfile
-- [ ] Создать docker-compose.yml
-- [ ] Настроить volumes для данных
+## 🔗 Quick Links
+
+- **Dashboard:** http://localhost:8000/
+- **Patterns:** http://localhost:8000/patterns/
+- **About:** http://localhost:8000/about/
+- **API:** http://localhost:8000/api/
 
 ---
 
-## 📈 ЭТАП 3: ETL Pipeline (Неделя 3-4)
+## 📝 Notes
 
-### 3.1 Data Collection Scripts
-- [ ] `src/api/aqicn_client.py` - клиент AQICN
-- [ ] `src/api/openaq_client.py` - клиент OpenAQ  
-- [ ] `src/api/openweather_client.py` - клиент погоды
+### Known Issues
+1. Some charts show loading spinners while data loads - normal behavior
+2. Data Statistics card on dashboard needs implementation
+3. Timeseries chart may be empty if no recent data (data ends March 2025)
 
-### 3.2 Data Processing
-- [ ] `src/etl/data_loader.py` - загрузка данных
-- [ ] `src/etl/data_cleaner.py` - очистка (пропуски, выбросы)
-- [ ] `src/etl/data_transformer.py` - трансформация (нормализация, UTC)
-- [ ] `src/etl/feature_engineering.py` - создание признаков
-
-### 3.3 Unified Data Model
-- [ ] Объединить все источники в единый формат
-- [ ] Создать pipeline для автоматического обновления
+### Key Findings from Data
+1. **Heating Season Effect:** PM2.5 2-3x higher Oct-Apr vs May-Sep
+2. **Diurnal Pattern:** Morning (8-9 AM) and evening (6-8 PM) peaks
+3. **Temperature Correlation:** r = -0.4 (cold weather = more pollution)
+4. **Wind Dispersion:** Higher wind reduces PM2.5 concentrations
 
 ---
 
-## 🤖 ЭТАП 4: ML Модели (Неделя 4-6)
+## 📅 Timeline
 
-### 4.1 Exploratory Data Analysis
-- [ ] Jupyter notebook с EDA
-- [ ] Корреляционный анализ
-- [ ] Визуализация временных рядов
-- [ ] Выявление сезонности
-
-### 4.2 AAQIS-Forecast (Прогнозирование PM2.5)
-- [ ] Baseline модель (Moving Average)
-- [ ] SVR модель
-- [ ] LSTM модель
-- [ ] Сравнение метрик (RMSE, MAE, R²)
-
-### 4.3 AAQIS-Source (Source Attribution)
-- [ ] Подготовка данных с tracer components
-- [ ] Random Forest классификатор
-- [ ] Feature importance анализ
-- [ ] Валидация результатов
-
-### 4.4 Model Pipeline
-- [ ] `src/models/forecast_model.py`
-- [ ] `src/models/source_model.py`
-- [ ] `src/models/model_trainer.py`
-- [ ] Сохранение/загрузка обученных моделей
+| Week | Status | Focus |
+|------|--------|-------|
+| 1-2 | ✅ | Data collection |
+| 2-3 | ✅ | Database setup, ETL |
+| 3-4 | ✅ | Django backend |
+| 4-5 | ✅ | Frontend dashboard |
+| 5-6 | 🔄 | Documentation |
+| 6-7 | ⏳ | ML models |
+| 7-8 | ⏳ | Testing & deployment |
+| 8-10 | ⏳ | Thesis writing |
 
 ---
 
-## 🌐 ЭТАП 5: Web Dashboard (Неделя 6-8)
-
-### 5.1 Django Setup
-- [ ] Создать Django проект
-- [ ] Настроить settings (DB, static, templates)
-- [ ] Создать приложения (dashboard, api, forecast)
-
-### 5.2 Backend API
-- [ ] REST API для получения данных
-- [ ] Endpoint для прогнозов
-- [ ] Endpoint для source attribution
-
-### 5.3 Frontend Dashboard
-- [ ] Главная страница с картой Астаны
-- [ ] График текущего AQI
-- [ ] Прогноз на 24-48 часов
-- [ ] Исторические данные
-- [ ] Source attribution визуализация
-
-### 5.4 Визуализации (Plotly.js)
-- [ ] Интерактивный график временного ряда
-- [ ] Карта с маркерами станций
-- [ ] Gauge для текущего AQI
-- [ ] Heatmap корреляций
-
----
-
-## 🧪 ЭТАП 6: Тестирование и Валидация (Неделя 8-9)
-
-### 6.1 Модели
-- [ ] Cross-validation
-- [ ] Тестирование на held-out данных
-- [ ] Сравнение с U.S. Embassy benchmark
-
-### 6.2 Система
-- [ ] Unit тесты для ETL
-- [ ] Integration тесты для API
-- [ ] Load тесты для дэшборда
-
-### 6.3 Документация
-- [ ] README.md с инструкцией запуска
-- [ ] API документация
-- [ ] Комментарии в коде
-
----
-
-## 📝 ЭТАП 7: Оформление диплома (Неделя 9-10)
-
-### 7.1 Глава 3
-- [ ] Описание реализации
-- [ ] Скриншоты системы
-- [ ] Листинги кода
-- [ ] Результаты экспериментов
-- [ ] Графики и таблицы
-
-### 7.2 Финализация
-- [ ] Заключение
-- [ ] Проверка на антиплагиат (>70%)
-- [ ] Презентация (12-17 слайдов)
-
----
-
-## 🔧 Технологический стек
-
-| Категория | Технология |
-|-----------|------------|
-| Язык | Python 3.10+ |
-| ML | scikit-learn, TensorFlow/Keras |
-| Data | pandas, numpy |
-| Визуализация | Plotly, matplotlib |
-| Web | Django, Django REST Framework |
-| Frontend | Bootstrap 5, Plotly.js |
-| База данных | PostgreSQL |
-| Контейнеризация | Docker, docker-compose |
-| API Sources | AQICN, OpenAQ, OpenWeatherMap |
-
----
-
-## 📅 Примерный Timeline
-
-| Неделя | Фокус |
-|--------|-------|
-| 1-2 | Сбор данных, настройка API |
-| 2-3 | Инфраструктура, Docker, DB |
-| 3-4 | ETL pipeline |
-| 4-6 | ML модели, EDA |
-| 6-8 | Web dashboard |
-| 8-9 | Тестирование |
-| 9-10 | Оформление диплома |
-
----
-
-## ⚠️ Известные проблемы
-
-1. **Kaggle датасет** - только sample, нет Астаны
-2. **Kazhydromet** - нет публичного API
-3. **Исторические данные** - нужно искать альтернативы
-
----
-
-## 📌 Ближайшие шаги (сегодня)
-
-1. [x] Настроить структуру репозитория
-2. [x] Протестировать AQICN API
-3. [ ] Создать скрипт сбора данных с AQICN
-4. [ ] Исследовать OpenAQ для исторических данных
-5. [ ] Начать EDA notebook
+*Last updated: December 2, 2025*

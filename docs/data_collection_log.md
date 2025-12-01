@@ -6,6 +6,11 @@
 **Date:** November 30 - December 1, 2025  
 **Purpose:** Complete technical log of data pipeline for thesis Chapter 3 (Methodology)
 
+> **Related Documentation:**
+> - [Implementation Log](implementation_log.md) - Django backend & frontend implementation
+> - [README](../README.md) - Project overview and quick start
+> - [TODO](../TODO.md) - Project status and roadmap
+
 ---
 
 ## Table of Contents
