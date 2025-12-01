@@ -258,8 +258,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 👤 Author
 
-**timseye** - Astana IT University, 2025
-
+**Temirlan** - Astana IT University, 2025
+**Atembek** - Astana IT University, 2025
+**Nikita** - Astana IT University, 2025
 ---
 
 ## 🙏 Acknowledgments
