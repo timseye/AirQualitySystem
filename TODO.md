@@ -70,6 +70,9 @@
 - [x] docker-compose.yml setup
 - [x] Virtual environment (.venv)
 - [x] pyproject.toml dependencies
+- [x] Seed data export (69,192 records in seed_data.sql.gz)
+- [x] One-command setup: `docker-compose up -d`
+- [x] Database auto-initialization scripts
 
 ---
 

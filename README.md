@@ -31,44 +31,73 @@ A comprehensive system for monitoring, analyzing, and visualizing air quality da
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.12+
-- PostgreSQL 15+ (or Docker)
-- Git
+### Option 1: Docker (Recommended) 🐳
 
-### 1. Clone Repository
+The easiest way to run the project with all 69,192 records pre-loaded:
+
 ```bash
+# Clone repository
 git clone https://github.com/timseye/AirQualitySystem.git
 cd AirQualitySystem
+
+# Start everything with one command
+docker-compose up -d
+
+# Wait ~30 seconds for database initialization
+# Then open http://localhost:8000
 ```
 
-### 2. Setup Python Environment
+**That's it!** The database will be automatically populated with historical data.
+
+#### Docker Commands
 ```bash
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Reset database (delete all data)
+docker-compose down -v
+docker-compose up -d
+```
+
+### Option 2: Manual Setup (Development)
+
+#### Prerequisites
+- Python 3.12+
+- PostgreSQL 15+
+- Git
+
+#### Steps
+
+```bash
+# 1. Clone repository
+git clone https://github.com/timseye/AirQualitySystem.git
+cd AirQualitySystem
+
+# 2. Setup Python environment
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 # .venv\Scripts\activate   # Windows
-
 pip install -r requirements.txt
-```
 
-### 3. Start PostgreSQL (Docker)
-```bash
-docker run -d \
-  --name aaqis_postgres \
-  -e POSTGRES_DB=aaqis_db \
-  -e POSTGRES_USER=aaqis_user \
-  -e POSTGRES_PASSWORD=aaqis_password \
-  -p 5432:5432 \
-  postgres:15
-```
+# 3. Start PostgreSQL (if not using Docker)
+# Make sure PostgreSQL is running with:
+#   Database: aaqis_db
+#   User: aaqis_user
+#   Password: aaqis_password
+#   Port: 5432
 
-### 4. Run Django Server
-```bash
+# 4. Load seed data (optional - for 69K records)
+gunzip -c docker/seed_data.sql.gz | PGPASSWORD=aaqis_password psql -h localhost -U aaqis_user -d aaqis_db
+
+# 5. Run Django server
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 
-### 5. Open Browser
+### Access the Application
 - **Dashboard:** http://localhost:8000/
 - **Patterns:** http://localhost:8000/patterns/
 - **About:** http://localhost:8000/about/

@@ -929,18 +929,21 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 **File:** `docker-compose.yml`
 
 ```yaml
-version: '3.8'
-
 services:
+  # PostgreSQL Database
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: aaqis_postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: aaqis_db
       POSTGRES_USER: aaqis_user
       POSTGRES_PASSWORD: aaqis_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/01-init-schema.sql:/docker-entrypoint-initdb.d/01-init-schema.sql:ro
+      - ./docker/02-load-data.sh:/docker-entrypoint-initdb.d/02-load-data.sh:ro
+      - ./docker/seed_data.sql.gz:/docker-entrypoint-initdb.d/seed_data.sql.gz:ro
     ports:
       - "5432:5432"
     healthcheck:
@@ -949,9 +952,14 @@ services:
       timeout: 5s
       retries: 5
 
+  # Django Web Application
   web:
     build: .
     container_name: aaqis_web
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     environment:
@@ -970,11 +978,58 @@ volumes:
   postgres_data:
 ```
 
+### 7.3 Database Initialization Scripts
+
+**File:** `docker/01-init-schema.sql`
+Creates the `unified_data` table structure with indexes.
+
+**File:** `docker/02-load-data.sh`
+Shell script that:
+1. Checks if data already exists
+2. Decompresses `seed_data.sql.gz`
+3. Loads 69,192 records into `unified_data`
+
+**File:** `docker/seed_data.sql.gz`
+Compressed SQL dump with all historical data (1.7MB compressed, 38MB uncompressed).
+
 ---
 
 ## 8. Running the Application
 
-### 8.1 Development Mode
+### 8.1 Docker Mode (Recommended) 🐳
+
+**One-command setup:**
+```bash
+# Clone and run
+git clone https://github.com/timseye/AirQualitySystem.git
+cd AirQualitySystem
+docker-compose up -d
+
+# Wait ~30 seconds for database initialization
+# Open http://localhost:8000
+```
+
+**What happens:**
+1. PostgreSQL container starts
+2. `01-init-schema.sql` creates table structure
+3. `02-load-data.sh` loads 69,192 records from `seed_data.sql.gz`
+4. Django container starts and connects to database
+5. Dashboard is ready!
+
+**Useful commands:**
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Reset database (delete all data and start fresh)
+docker-compose down -v
+docker-compose up -d
+```
+
+### 8.2 Development Mode (Manual)
 
 **Terminal 1 - Start PostgreSQL:**
 ```bash
@@ -995,7 +1050,7 @@ python manage.py runserver 0.0.0.0:8000
 - About: http://localhost:8000/about/
 - API: http://localhost:8000/api/
 
-### 8.2 Docker Mode (Full Stack)
+### 8.3 Docker Mode (Full Stack)
 
 ```bash
 cd ~/AirQualitySystem

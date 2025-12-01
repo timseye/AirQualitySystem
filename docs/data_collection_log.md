@@ -1002,10 +1002,58 @@ psql -U aaqis_user -d aaqis_db -c "SELECT COUNT(*) FROM unified_data;"
 
 ---
 
-**Document Version:** 2.0  
-**Last Updated:** December 1, 2025  
-**Status:** Data pipeline complete ✅
+## 14. Seed Data for Teammates
+
+### 14.1 Data Export
+
+All 69,192 records from `unified_data` table were exported for easy distribution:
+
+```bash
+# Export command used
+PGPASSWORD=aaqis_password pg_dump -h localhost -U aaqis_user -d aaqis_db \
+  -t unified_data --data-only --column-inserts > docker/seed_data.sql
+
+# Compress for Git
+gzip -k docker/seed_data.sql
+```
+
+**Result:**
+- `docker/seed_data.sql.gz` - 1.7MB compressed (38MB uncompressed)
+
+### 14.2 Auto-Loading on Docker Start
+
+When running `docker-compose up -d`, the data is automatically loaded:
+
+1. `docker/01-init-schema.sql` - Creates table structure
+2. `docker/02-load-data.sh` - Decompresses and loads seed data
+
+### 14.3 For Teammates
+
+**Clone and run:**
+```bash
+git clone https://github.com/timseye/AirQualitySystem.git
+cd AirQualitySystem
+docker-compose up -d
+# Open http://localhost:8000
+```
+
+**Manual data loading (without Docker):**
+```bash
+# Load seed data into existing PostgreSQL
+gunzip -c docker/seed_data.sql.gz | PGPASSWORD=aaqis_password psql -h localhost -U aaqis_user -d aaqis_db
+
+# Verify
+PGPASSWORD=aaqis_password psql -h localhost -U aaqis_user -d aaqis_db -c "SELECT COUNT(*) FROM unified_data;"
+# Expected: 69192
+```
+
+---
+
+**Document Version:** 3.0  
+**Last Updated:** December 2, 2025  
+**Status:** Data pipeline complete ✅ | Seed data exported ✅
 
 **Change Log:**
 - v1.0 (Nov 30): Initial data collection documentation
 - v2.0 (Dec 1): Added normalization pipeline, schema details, troubleshooting
+- v3.0 (Dec 2): Added seed data export and teammate onboarding instructions
