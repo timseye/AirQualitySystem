@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #333; }
+        a { color: #0366d6; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul { padding-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🌤 Air Quality System</h1>
+    <p>Project repository for air quality monitoring and analysis.</p>
+    
+    <h2>📁 Project Structure</h2>
+    <ul>
+        <li><a href="docs/data_collection_log.md">Data Collection Log</a></li>
+        <li><a href="docs/implementation_log.md">Implementation Log</a></li>
+        <li><a href="data/">Data Directory</a></li>
+        <li><a href="backend/">Backend Code</a></li>
+    </ul>
+    
+    <h2>🔗 Links</h2>
+    <ul>
+        <li><a href="https://github.com/timseye/AirQualitySystem">GitHub Repository</a></li>
+        <li><a href="https://github.com/timseye/AirQualitySystem/tree/main/docs">Documentation</a></li>
+    </ul>
+    
+    <footer>
+        <p>Last updated: <span id="date"></span></p>
+    </footer>
+    
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString();
+    </script>
+</body>
+</html>
