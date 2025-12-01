@@ -18,7 +18,9 @@ services:
       POSTGRES_PASSWORD: aaqis_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+      - ./docker/01-init-schema.sql:/docker-entrypoint-initdb.d/01-init-schema.sql:ro
+      - ./docker/02-load-data.sh:/docker-entrypoint-initdb.d/02-load-data.sh:ro
+      - ./docker/seed_data.sql.gz:/docker-entrypoint-initdb.d/seed_data.sql.gz:ro
     ports:
       - "5432:5432"
     healthcheck:
