@@ -203,27 +203,31 @@ def statistics(request):
         # AQI distribution
         cursor.execute("""
             SELECT 
-                CASE 
-                    WHEN pm25 <= 12 THEN 'Good'
-                    WHEN pm25 <= 35.4 THEN 'Moderate'
-                    WHEN pm25 <= 55.4 THEN 'Unhealthy for Sensitive'
-                    WHEN pm25 <= 150.4 THEN 'Unhealthy'
-                    WHEN pm25 <= 250.4 THEN 'Very Unhealthy'
-                    ELSE 'Hazardous'
-                END as category,
+                category,
                 COUNT(*) as count
-            FROM unified_data
-            WHERE pm25 IS NOT NULL
-            GROUP BY 1
-            ORDER BY 
-                CASE 
-                    WHEN pm25 <= 12 THEN 1
-                    WHEN pm25 <= 35.4 THEN 2
-                    WHEN pm25 <= 55.4 THEN 3
-                    WHEN pm25 <= 150.4 THEN 4
-                    WHEN pm25 <= 250.4 THEN 5
-                    ELSE 6
-                END
+            FROM (
+                SELECT 
+                    CASE 
+                        WHEN pm25 <= 12 THEN 'Good'
+                        WHEN pm25 <= 35.4 THEN 'Moderate'
+                        WHEN pm25 <= 55.4 THEN 'Unhealthy for Sensitive'
+                        WHEN pm25 <= 150.4 THEN 'Unhealthy'
+                        WHEN pm25 <= 250.4 THEN 'Very Unhealthy'
+                        ELSE 'Hazardous'
+                    END as category,
+                    CASE 
+                        WHEN pm25 <= 12 THEN 1
+                        WHEN pm25 <= 35.4 THEN 2
+                        WHEN pm25 <= 55.4 THEN 3
+                        WHEN pm25 <= 150.4 THEN 4
+                        WHEN pm25 <= 250.4 THEN 5
+                        ELSE 6
+                    END as sort_order
+                FROM unified_data
+                WHERE pm25 IS NOT NULL
+            ) categorized
+            GROUP BY category, sort_order
+            ORDER BY sort_order
         """)
         distribution = dictfetchall(cursor)
     
