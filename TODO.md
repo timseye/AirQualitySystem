@@ -74,6 +74,12 @@
 - [x] One-command setup: `docker-compose up -d`
 - [x] Database auto-initialization scripts
 
+### System Improvements (Dec 2025) ✅
+- [x] Fix unit conversion bug (CAMS data kg/m³ → µg/m³) - `reprocess_cams` command
+- [x] Move ETL scripts to backend management commands - Monitoring System
+- [x] Implement `fetch_openaq` for reliable US Embassy data monitoring
+- [x] Refactor `fetch_latest_data` (AQICN) for robustness
+
 ---
 
 ## 🔄 In Progress

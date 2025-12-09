@@ -125,12 +125,12 @@ def timeseries_data(request):
             FROM unified_data
             WHERE {db_column} IS NOT NULL
               AND timestamp_utc >= (
-                  SELECT MAX(timestamp_utc) - INTERVAL '{days} days' 
+                  SELECT MAX(timestamp_utc) - INTERVAL %s 
                   FROM unified_data 
                   WHERE {db_column} IS NOT NULL
               )
             ORDER BY timestamp_utc ASC
-        """)
+        """, [f'{days} days'])
         rows = cursor.fetchall()
     
     return JsonResponse({
